@@ -15,8 +15,8 @@ public class KielsonsAPI implements ModInitializer {
 		KielsonsEntityAttributes.registerEntityAttributes();
 
 		KielsonsEvents.ON_HEAL.register((livingEntity, original) -> {
-			if(original == 0f || livingEntity.getAttributeInstance(KielsonsEntityAttributes.HEALING) == null) return original;
-			return (float) (original * livingEntity.getAttributeValue(KielsonsEntityAttributes.HEALING));
+			if(original == 0f || livingEntity.getAttributeInstance(KielsonsEntityAttributes.HEALING_MULTIPLIER) == null) return original;
+			return (float) (original * livingEntity.getAttributeValue(KielsonsEntityAttributes.HEALING_MULTIPLIER));
 		});
 	}
 }

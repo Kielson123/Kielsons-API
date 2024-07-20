@@ -12,6 +12,10 @@ base {
 
 repositories {}
 
+loom {
+	accessWidenerPath = file("src/main/resources/kielsonsapi.accesswidener")
+}
+
 fabricApi {
 	configureDataGeneration()
 }

@@ -1,11 +1,17 @@
 {
-	"required": true,
-	"package": "com.kielson.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"ExampleMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
+  "required": true,
+  "package": "com.kielson.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "BlockMixin",
+    "EntityMixin",
+    "LivingEntityMixin",
+    "PersistentProjectileEntityMixin",
+    "PlayerEntityMixin",
+    "ProjectileEntityMixin",
+    "TargetPredicateMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
 	}
 }

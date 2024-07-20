@@ -11,7 +11,7 @@ import static com.kielson.KielsonsAPI.MOD_ID;
 
 public class KielsonsEntityAttributes {
 
-    public static final RegistryEntry<EntityAttribute> HEALING = register("healing", 1, 0, 1024);
+    public static final RegistryEntry<EntityAttribute> HEALING_MULTIPLIER = register("healing_multiplier", 1, 0, 1024);
     public static final RegistryEntry<EntityAttribute> EXPERIENCE = register("experience", 1, 0,1024);
     public static final RegistryEntry<EntityAttribute> LUNG_CAPACITY = register("lung_capacity", 0, -2048, 2048);
     public static final RegistryEntry<EntityAttribute> SWIMMING_SPEED = register("swimming_speed", 0.5, 0, 1);
