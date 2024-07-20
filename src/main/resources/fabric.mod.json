@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "kielsonsapi",
+	"version": "0.1",
+	"name": "KielsonsAPI",
+	"description": "Common code for all of _Kielson's mods.",
+	"authors": [
+		"_Kielson"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "GNU GPL-3.0",
+	"icon": "assets/kielsonsapi/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.kielson.KielsonsAPI"
+		]
+	},
+	"mixins": [
+		"kielsonsapi.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	},
+	"accessWidener" : "kielsonsapi.accesswidener"
+}

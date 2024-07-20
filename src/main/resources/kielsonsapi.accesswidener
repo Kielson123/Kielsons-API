@@ -1,0 +1,6 @@
+accessWidener v2 named
+
+accessible method net/minecraft/component/DataComponentTypes register (Ljava/lang/String;Ljava/util/function/UnaryOperator;)Lnet/minecraft/component/ComponentType;
+accessible method net/minecraft/loot/function/ApplyBonusLootFunction$Formula getValue (Lnet/minecraft/util/math/random/Random;II)I
+
+accessible field net/minecraft/entity/ai/TargetPredicate baseMaxDistance D
