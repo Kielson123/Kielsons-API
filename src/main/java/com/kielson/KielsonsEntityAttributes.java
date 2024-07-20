@@ -17,9 +17,9 @@ public class KielsonsEntityAttributes {
     public static final RegistryEntry<EntityAttribute> SWIMMING_SPEED = register("swimming_speed", 0.5, 0, 1);
     public static final RegistryEntry<EntityAttribute> MOB_DETECTION_RANGE = register("mob_detection_range", 0, -1024, 1024);
     public static final RegistryEntry<EntityAttribute> ITEM_PICK_UP_RANGE = register("item_pick_up_range", 0, -64, 64);
-    public static final RegistryEntry<EntityAttribute> RANGED_DAMAGE = register("ranged_damage", 1, 0, 1024);
+    public static final RegistryEntry<EntityAttribute> RANGED_DAMAGE = register("ranged_damage", 0, 0, 2048);
     public static final RegistryEntry<EntityAttribute> RANGED_ACCURACY = register("ranged_accuracy", 0, -1024, 1024);
-    public static final RegistryEntry<EntityAttribute> DRAW_SPEED = register("draw_speed", 0, -1024, 1024);
+    public static final RegistryEntry<EntityAttribute> PULL_TIME = register("pull_time", 100, 0, 2048);
 
     private static RegistryEntry<EntityAttribute> register(String name, double base, double min, double max) {
         EntityAttribute attribute = new ClampedEntityAttribute("attribute." + MOD_ID + '.' + name, base, min, max).setTracked(true);

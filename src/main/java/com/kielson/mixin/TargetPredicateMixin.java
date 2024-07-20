@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(TargetPredicate.class)
 abstract class TargetPredicateMixin {
-
     @Unique private final TargetPredicate targetPredicate = (TargetPredicate)(Object) this;
 
     @ModifyVariable(method = "test", at = @At("STORE"), ordinal = 1)

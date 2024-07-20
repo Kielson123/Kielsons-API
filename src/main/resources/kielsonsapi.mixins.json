@@ -9,9 +9,15 @@
     "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
     "ProjectileEntityMixin",
-    "TargetPredicateMixin"
+    "TargetPredicateMixin",
   ],
   "injectors": {
     "defaultRequire": 1
-	}
+  },
+  "client": [
+    "client.AbstractClientPlayerEntityMixin",
+    "client.HeldItemRendererMixin",
+    "client.MinecraftClientMixin",
+    "client.PlayerEntityRendererMixin"
+  ]
 }

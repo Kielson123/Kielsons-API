@@ -1,0 +1,12 @@
+{
+  "attribute.kielsonsAPI.healing_multiplier": "Healing",
+  "attribute.kielsonsAPI.experience": "Experience",
+  "attribute.kielsonsAPI.swimming_speed": "Swimming Speed",
+  "attribute.kielsonsAPI.lung_capacity": "Lung Capacity",
+  "attribute.kielsonsAPI.mob_detection_range": "Mob Detection Range",
+  "attribute.kielsonsAPI.item_pick_up_range": "Item Pick Up Range",
+  "attribute.kielsonsAPI.ranged_damage": "Ranged Damage",
+  "attribute.kielsonsAPI.ranged_accuracy": "Ranged Accuracy",
+  "attribute.kielsonsAPI.pull_time": "sec Pull Time",
+  "item.kielsonsAPI.pull_time": "%1$s sec Pull Time"
+}

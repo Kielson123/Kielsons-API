@@ -20,14 +20,9 @@ import java.util.Random;
 
 @Mixin(PersistentProjectileEntity.class)
 abstract class PersistentProjectileEntityMixin {
-
     @Unique private static final Random CRIT_RANDOM = new Random();
-
-    @Shadow
-    private double damage;
-
-    @Shadow
-    public abstract boolean isCritical();
+    @Shadow private double damage;
+    @Shadow public abstract boolean isCritical();
 
     @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/damage/DamageSources;arrow(Lnet/minecraft/entity/projectile/PersistentProjectileEntity;Lnet/minecraft/entity/Entity;)Lnet/minecraft/entity/damage/DamageSource;", shift = At.Shift.AFTER))
     private void KielsonsAPI$applyRangedDamageAttribute(EntityHitResult entityHitResult, CallbackInfo ci, @Local(ordinal = 0) LocalDoubleRef damage, @Local(ordinal = 1) Entity entity){

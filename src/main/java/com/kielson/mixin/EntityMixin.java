@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.*;
 
 @Mixin(Entity.class)
 abstract class EntityMixin {
-
     @Unique private final Entity entity = (Entity)(Object) this;
 
     @ModifyReturnValue(method = "getMaxAir", at = @At("RETURN"))

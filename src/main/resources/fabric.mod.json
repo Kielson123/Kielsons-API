@@ -16,6 +16,9 @@
 	"entrypoints": {
 		"main": [
 			"com.kielson.KielsonsAPI"
+		],
+		"client": [
+			"com.kielson.client.KielsonsAPIClient"
 		]
 	},
 	"mixins": [
