@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '1.7-SNAPSHOT'
 	id 'maven-publish'
+	id "com.modrinth.minotaur" version "2.+"
 }
 
 version = project.mod_version
@@ -25,8 +26,7 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
 processResources {
@@ -63,4 +63,17 @@ publishing {
 	}
 
 	repositories {}
+}
+
+modrinth {
+	token = project.modrinth_token
+	projectId = "CVdyYsTz"
+	versionNumber = String.valueOf(project.mod_version)
+	versionType = project.version_type
+	uploadFile = remapJar
+	gameVersions = [String.valueOf(project.minecraft_version)]
+	loaders = ["fabric"]
+	dependencies {
+		required.project "fabric-api"
+	}
 }
