@@ -5,6 +5,7 @@
   "mixins": [
     "BlockMixin",
     "BowItemMixin",
+    "CrossbowItemMixin",
     "EntityMixin",
     "LivingEntityMixin",
     "PersistentProjectileEntityMixin",
