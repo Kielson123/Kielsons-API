@@ -8,5 +8,5 @@
   "attribute.kielsonsAPI.ranged_damage": "Ranged Damage",
   "attribute.kielsonsAPI.ranged_accuracy": "Ranged Accuracy",
   "attribute.kielsonsAPI.pull_time": "sec Pull Time",
-  "item.kielsonsAPI.pull_time": "%1$s sec Pull Time"
+  "item.kielsonsAPI.pull_time": "%1$s sec Pull Time",
 }

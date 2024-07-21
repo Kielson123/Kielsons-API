@@ -2,20 +2,25 @@ package com.kielson.util;
 
 import com.ibm.icu.text.DecimalFormat;
 import com.kielson.KielsonsEntityAttributes;
-import com.kielson.item.CustomRangedWeaponItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
+import java.util.Objects;
 
 public class TooltipUtil {
 
     public static void addPullTime(ItemStack itemStack, List<Text> lines) {
-        var pullTime = readablePullTime(itemStack);
+        int pullTime = readablePullTime(itemStack);
         if (pullTime > 0) {
             int lastAttributeLine = getLastAttributeLine(lines);
 
@@ -32,14 +37,13 @@ public class TooltipUtil {
 
     private static int getLastAttributeLine(List<Text> lines) {
         int lastAttributeLine = -1;
-        var attributePrefix = "attribute.modifier";
-        var handPrefix = "item.modifiers";
+        String attributePrefix = "attribute.modifier";
+        String handPrefix = "item.modifiers";
         for (int i = 0; i < lines.size(); i++) {
-            var line = lines.get(i);
-            var content = line.getContent();
-            // Is this a line like "+1 Something"
+            Text line = lines.get(i);
+            TextContent content = line.getContent();
             if (content instanceof TranslatableTextContent translatableText) {
-                var key = translatableText.getKey();
+                String key = translatableText.getKey();
                 if (key.startsWith(attributePrefix) || key.startsWith(handPrefix)) {
                     lastAttributeLine = i;
                 }
@@ -49,13 +53,15 @@ public class TooltipUtil {
     }
 
     private static int readablePullTime(ItemStack itemStack) {
+        Item item = itemStack.getItem();
         double pullTime = 0;
-        if (itemStack.getItem() instanceof CustomRangedWeaponItem rangedWeaponItem) {
-            pullTime = rangedWeaponItem.getPullTime();
+        if (item instanceof CustomRangedWeapon customBow) {
+            pullTime = customBow.getRangedWeaponConfig().pull_time();
         }
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player != null && pullTime > 0) {
-            pullTime /= (player.getAttributeValue(KielsonsEntityAttributes.PULL_TIME) / player.getAttributeBaseValue(KielsonsEntityAttributes.PULL_TIME));
+            double haste = player.getAttributeValue(KielsonsEntityAttributes.DRAW_TIME);
+            pullTime /= (haste / player.getAttributeBaseValue(KielsonsEntityAttributes.DRAW_TIME));
         }
         return (int) pullTime;
     }

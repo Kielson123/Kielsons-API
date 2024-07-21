@@ -1,6 +1,5 @@
 package com.kielson.util;
 
-import com.kielson.item.CustomRangedWeaponItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
@@ -28,8 +27,8 @@ public class ScalingUtil {
         }
 
         double velocityMultiplier = 1;
-        if (item instanceof CustomRangedWeaponItem rangedWeapon) {
-            float customVelocity = rangedWeapon.getProjectileVelocity();
+        if (item instanceof CustomRangedWeapon rangedWeapon) {
+            var customVelocity = rangedWeapon.getRangedWeaponConfig().velocity();
             if (customVelocity > 0) {
                 velocityMultiplier = arrowVelocityMultiplier(baseline.velocity, customVelocity);
             }

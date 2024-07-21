@@ -1,8 +1,11 @@
 package com.kielson;
 
 import com.kielson.events.KielsonsEvents;
+import com.kielson.util.CustomRangedWeapon;
+import com.kielson.util.RangedConfig;
 import net.fabricmc.api.ModInitializer;
 
+import net.minecraft.item.Items;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,5 +21,8 @@ public class KielsonsAPI implements ModInitializer {
 			if(original == 0f || livingEntity.getAttributeInstance(KielsonsEntityAttributes.HEALING_MULTIPLIER) == null) return original;
 			return (float) (original * livingEntity.getAttributeValue(KielsonsEntityAttributes.HEALING_MULTIPLIER));
 		});
+
+		((CustomRangedWeapon) Items.BOW).setRangedWeaponConfig(RangedConfig.BOW);
+		((CustomRangedWeapon) Items.CROSSBOW).setRangedWeaponConfig(RangedConfig.CROSSBOW);
 	}
 }

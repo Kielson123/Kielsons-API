@@ -46,7 +46,7 @@ abstract class LivingEntityMixin extends Entity {
                 .add(KielsonsEntityAttributes.RANGED_DAMAGE)
                 .add(KielsonsEntityAttributes.LUNG_CAPACITY)
                 .add(KielsonsEntityAttributes.SWIMMING_SPEED)
-                .add(KielsonsEntityAttributes.PULL_TIME);
+                .add(KielsonsEntityAttributes.DRAW_TIME);
     }
 
     @ModifyVariable(method = "heal", at = @At("HEAD"), argsOnly = true)
@@ -117,8 +117,8 @@ abstract class LivingEntityMixin extends Entity {
             UseAction useAction = activeItemStack.getUseAction();
             if (useAction == UseAction.BOW || useAction == UseAction.CROSSBOW) {
                 int progress = activeItemStack.getMaxUseTime(livingEntity) - value;
-                double haste = livingEntity.getAttributeValue(KielsonsEntityAttributes.PULL_TIME);
-                int newProgress = (int) (progress * (haste / livingEntity.getAttributeBaseValue(KielsonsEntityAttributes.PULL_TIME)));
+                double haste = livingEntity.getAttributeValue(KielsonsEntityAttributes.DRAW_TIME);
+                int newProgress = (int) (progress * (haste / livingEntity.getAttributeBaseValue(KielsonsEntityAttributes.DRAW_TIME)));
                 info.setReturnValue(activeItemStack.getMaxUseTime(livingEntity) - newProgress);
             }
         }

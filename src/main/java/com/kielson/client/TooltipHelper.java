@@ -1,6 +1,6 @@
 package com.kielson.client;
 
-import com.kielson.item.CustomRangedWeaponItem;
+import com.kielson.util.CustomRangedWeapon;
 import com.kielson.util.TooltipUtil;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -14,8 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TooltipHelper {
+
     public static void updateTooltipText(ItemStack itemStack, List<Text> lines) {
-        if (itemStack.getItem() instanceof CustomRangedWeaponItem) {
+        if (itemStack.getItem() instanceof CustomRangedWeapon) {
             mergeAttributeLines(lines);
             replaceAttributeLines(lines);
         }
@@ -26,8 +27,7 @@ public class TooltipHelper {
         List<Text> heldInHandLines = new ArrayList<>();
         List<Text> mainHandAttributes = new ArrayList<>();
         List<Text> offHandAttributes = new ArrayList<>();
-        for (int i = 0; i < tooltip.size(); i++) {
-            Text line = tooltip.get(i);
+        for (Text line : tooltip) {
             TextContent content = line.getContent();
             if (content instanceof TranslatableTextContent translatableText) {
                 if (translatableText.getKey().startsWith("item.modifiers")) {
@@ -65,18 +65,19 @@ public class TooltipHelper {
 
     private static void replaceAttributeLines(List<Text> tooltip) {
         String attributeTranslationKey = "attribute.kielsonsAPI.ranged_damage";
-        for (int i = 0; i < tooltip.size(); i++)  {
+        for (int i = 0; i < tooltip.size(); i++) {
             Text line = tooltip.get(i);
             TextContent content = line.getContent();
             if (content instanceof TranslatableTextContent translatable) {
                 boolean isProjectileAttributeLine = false;
                 double attributeValue = 0.0;
                 if (translatable.getKey().startsWith("attribute.modifier.plus.0")) {
-                    for (Object arg: translatable.getArgs()) {
+                    for (Object arg : translatable.getArgs()) {
                         if (arg instanceof String string) {
                             try {
                                 attributeValue = Double.parseDouble(string);
-                            } catch (Exception ignored) { }
+                            } catch (Exception ignored) {
+                            }
                         }
                         if (arg instanceof Text attributeText) {
                             if (attributeText.getContent() instanceof TranslatableTextContent attributeTranslatable) {
@@ -87,7 +88,6 @@ public class TooltipHelper {
                         }
                     }
                 }
-
                 if (isProjectileAttributeLine && attributeValue > 0) {
                     Text greenAttributeLine = Text.literal(" ")
                             .append(Text.translatable("attribute.modifier.equals." + EntityAttributeModifier.Operation.ADD_VALUE.getId(),

@@ -4,12 +4,14 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "BlockMixin",
+    "BowItemMixin",
     "EntityMixin",
     "LivingEntityMixin",
     "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
     "ProjectileEntityMixin",
-    "TargetPredicateMixin",
+    "RangedWeaponItemMixin",
+    "TargetPredicateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
