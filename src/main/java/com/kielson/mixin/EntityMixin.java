@@ -12,6 +12,9 @@ import org.spongepowered.asm.mixin.injection.*;
 abstract class EntityMixin {
     @Unique private final Entity entity = (Entity)(Object) this;
 
+    /**
+     * @author DaFuqs
+     */
     @ModifyReturnValue(method = "getMaxAir", at = @At("RETURN"))
     public int KielsonsAPI$getMaxAir(int original) {
         if (!(entity instanceof LivingEntity livingEntity)) {

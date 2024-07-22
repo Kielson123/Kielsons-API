@@ -54,6 +54,9 @@ abstract class LivingEntityMixin extends Entity {
         return KielsonsEvents.ON_HEAL.invoker().onHeal(livingEntity, amount);
     }
 
+    /**
+     * @author DaFuqs
+     */
     @ModifyArg(method = "travel(Lnet/minecraft/util/math/Vec3d;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;updateVelocity(FLnet/minecraft/util/math/Vec3d;)V", ordinal = 0))
     public float KielsonsAPI$waterSpeed(float original) {
         EntityAttributeInstance waterSpeed = livingEntity.getAttributeInstance(KielsonsEntityAttributes.SWIMMING_SPEED);
@@ -67,6 +70,9 @@ abstract class LivingEntityMixin extends Entity {
         }
     }
 
+    /**
+     * @author DaFuqs
+     */
     @ModifyExpressionValue(method = "swimUpward", at = @At(value = "CONSTANT", args = "doubleValue=0.03999999910593033D"))
     public double KielsonsAPI$modifyUpwardSwimming(double original, TagKey<Fluid> fluid) {
         if (fluid == FluidTags.WATER) {
@@ -96,6 +102,9 @@ abstract class LivingEntityMixin extends Entity {
         return(int) (originalXP * attributeInstance.getValue());
     }
 
+    /**
+     * @author DaFuqs
+     */
     @Environment(EnvType.CLIENT)
     @ModifyExpressionValue(method = "knockDownwards", at = @At(value = "CONSTANT", args = "doubleValue=-0.03999999910593033D"))
     public double KielsonsAPI$knockDownwards(double original) {

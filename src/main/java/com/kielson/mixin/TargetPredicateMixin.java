@@ -14,6 +14,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 abstract class TargetPredicateMixin {
     @Unique private final TargetPredicate targetPredicate = (TargetPredicate)(Object) this;
 
+    /**
+     * @author DaFuqs
+     */
     @ModifyVariable(method = "test", at = @At("STORE"), ordinal = 1)
     private double KielsonsAPI$adjustMobDetectionRange(double e, @Local(ordinal = 0) double d, @Local(ordinal = 1, argsOnly = true) LivingEntity targetEntity) {
         if (targetEntity == null) {

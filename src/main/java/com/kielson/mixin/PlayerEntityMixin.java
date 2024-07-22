@@ -38,6 +38,9 @@ abstract class PlayerEntityMixin extends LivingEntity{
         experienceProgress = experienceProgress * (float) this.getAttributeValue(KielsonsEntityAttributes.EXPERIENCE);
     }
 
+    /**
+     * @author DaFuqs
+     */
     @ModifyVariable(method = "tickMovement", at = @At("STORE"))
     private Box KielsonsAPI$adjustCollectionRange(Box original) {
         PlayerEntity thisPlayer = (PlayerEntity)(Object) this;
