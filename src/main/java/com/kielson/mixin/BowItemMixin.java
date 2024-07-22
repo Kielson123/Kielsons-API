@@ -31,9 +31,10 @@ abstract class BowItemMixin extends RangedWeaponItem {
     private static AttributeModifiersComponent createAttributeModifiers() {
         return AttributeModifiersComponent.builder()
                 .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), 6.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .add(KielsonsEntityAttributes.DRAW_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), 20.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), 1.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .build();
     }
+
 
     /*private RangedConfig config() {
         return ((CustomRangedWeapon) this).getRangedWeaponConfig();

@@ -1,25 +1,40 @@
 package com.kielson.mixin;
 
 import com.kielson.KielsonsEntityAttributes;
-import com.kielson.util.CustomRangedWeapon;
-import com.kielson.util.RangedConfig;
-import com.kielson.util.ScalingUtil;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+
+import static com.kielson.KielsonsAPI.MOD_ID;
 
 @Mixin(CrossbowItem.class)
-public class CrossbowItemMixin {
-    @Shadow @Final private static float DEFAULT_SPEED;
+abstract class CrossbowItemMixin extends RangedWeaponItem {
+    public CrossbowItemMixin(Settings settings) {
+        super(settings);
+    }
+
+    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/RangedWeaponItem;<init>(Lnet/minecraft/item/Item$Settings;)V"))
+    private static Settings addCustomAttributes(Settings settings){
+        return settings.attributeModifiers(createAttributeModifiers());
+    }
+
+    @Unique
+    private static AttributeModifiersComponent createAttributeModifiers() {
+        return AttributeModifiersComponent.builder()
+                .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "crossbow"), 9.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "crossbow"), 1.25, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .build();
+    }
+
+
+    /*@Shadow @Final private static float DEFAULT_SPEED;
     private static final float STANDARD_VELOCITY = DEFAULT_SPEED;
     private static final float STANDARD_DAMAGE = 9;
 
@@ -37,9 +52,6 @@ public class CrossbowItemMixin {
         return f;
     }
 
-    /**
-     * Apply custom pull time
-     */
     @Inject(method = "getPullTime", at = @At("HEAD"), cancellable = true)
     private static void applyCustomPullTime(ItemStack stack, LivingEntity user, CallbackInfoReturnable<Integer> cir) {
         var item = stack.getItem();
@@ -52,9 +64,6 @@ public class CrossbowItemMixin {
         }
     }
 
-    /**
-     * Apply custom velocity and damage-
-     */
     @Inject(method = "shoot", at = @At(value = "RETURN"))
     private void applyCustomVelocityAndDamage(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
@@ -69,5 +78,5 @@ public class CrossbowItemMixin {
                 persistentProjectile.setDamage(finalDamage);
             }
         }
-    }
+    }*/
 }

@@ -1,6 +1,5 @@
 package com.kielson.mixin.client;
 
-import com.kielson.item.CustomCrossbow;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;

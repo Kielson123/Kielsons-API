@@ -1,0 +1,11 @@
+{
+  "attribute.kielsonsapi.healing_multiplier": "mnożnika leczenia",
+  "attribute.kielsonsapi.experience": "doświadczenia",
+  "attribute.kielsonsapi.swimming_speed": "prędkości pływania",
+  "attribute.kielsonsapi.lung_capacity": "pojemności płuc",
+  "attribute.kielsonsapi.mob_detection_range": "zasięgu wykrycia mobów",
+  "attribute.kielsonsapi.item_pick_up_range": "zasięgu podniesienia przedmiotu",
+  "attribute.kielsonsapi.ranged_damage": "obrażeń zasięgowych",
+  "attribute.kielsonsapi.accuracy": "celności",
+  "attribute.kielsonsapi.pull_time": "s czasu naciągnięcia"
+}

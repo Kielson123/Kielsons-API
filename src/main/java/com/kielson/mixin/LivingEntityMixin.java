@@ -15,7 +15,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,7 +45,7 @@ abstract class LivingEntityMixin extends Entity {
                 .add(KielsonsEntityAttributes.RANGED_DAMAGE)
                 .add(KielsonsEntityAttributes.LUNG_CAPACITY)
                 .add(KielsonsEntityAttributes.SWIMMING_SPEED)
-                .add(KielsonsEntityAttributes.DRAW_TIME);
+                .add(KielsonsEntityAttributes.PULL_TIME);
     }
 
     @ModifyVariable(method = "heal", at = @At("HEAD"), argsOnly = true)
@@ -126,8 +125,8 @@ abstract class LivingEntityMixin extends Entity {
             UseAction useAction = activeItemStack.getUseAction();
             if (useAction == UseAction.BOW || useAction == UseAction.CROSSBOW) {
                 int progress = activeItemStack.getMaxUseTime(livingEntity) - value;
-                double haste = livingEntity.getAttributeValue(KielsonsEntityAttributes.DRAW_TIME);
-                int newProgress = (int) (progress * (haste / livingEntity.getAttributeBaseValue(KielsonsEntityAttributes.DRAW_TIME)));
+                double haste = livingEntity.getAttributeValue(KielsonsEntityAttributes.PULL_TIME);
+                int newProgress = (int) (progress * (haste / livingEntity.getAttributeBaseValue(KielsonsEntityAttributes.PULL_TIME)));
                 info.setReturnValue(activeItemStack.getMaxUseTime(livingEntity) - newProgress);
             }
         }

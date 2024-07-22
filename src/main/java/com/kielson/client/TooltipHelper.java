@@ -1,10 +1,9 @@
 package com.kielson.client;
 
-import com.kielson.util.CustomRangedWeapon;
-import com.kielson.util.TooltipUtil;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
@@ -16,11 +15,11 @@ import java.util.List;
 public class TooltipHelper {
 
     public static void updateTooltipText(ItemStack itemStack, List<Text> lines) {
-        if (itemStack.getItem() instanceof CustomRangedWeapon) {
+        if (itemStack.getItem() instanceof RangedWeaponItem) {
             mergeAttributeLines(lines);
-            replaceAttributeLines(lines);
+            fixRangedDamage(lines);
+            fixPullTime(lines);
         }
-        TooltipUtil.addPullTime(itemStack, lines);
     }
 
     private static void mergeAttributeLines(List<Text> tooltip) {
@@ -54,7 +53,6 @@ public class TooltipHelper {
                     tooltip.remove(tooltip.lastIndexOf(offhandAttribute));
                 }
             }
-
             int lastIndex = tooltip.size() - 1;
             Text lastLine = tooltip.get(lastIndex);
             if (lastLine.getString().isEmpty()) {
@@ -63,8 +61,43 @@ public class TooltipHelper {
         }
     }
 
-    private static void replaceAttributeLines(List<Text> tooltip) {
-        String attributeTranslationKey = "attribute.kielsonsAPI.ranged_damage";
+    private static void fixRangedDamage(List<Text> tooltip) {
+        String attributeTranslationKey = "attribute.kielsonsapi.ranged_damage";
+        for (int i = 0; i < tooltip.size(); i++) {
+            Text line = tooltip.get(i);
+            TextContent content = line.getContent();
+            if (content instanceof TranslatableTextContent translatable) {
+                boolean isProjectileAttributeLine = false;
+                double attributeValue = 0.0;
+                if (translatable.getKey().startsWith("attribute.modifier.plus.0")) {
+                    for (Object arg : translatable.getArgs()) {
+                        if (arg instanceof String string) {
+                            try {
+                                attributeValue = Double.parseDouble(string);
+                            } catch (Exception ignored) {
+                            }
+                        }
+                        if (arg instanceof Text attributeText) {
+                            if (attributeText.getContent() instanceof TranslatableTextContent attributeTranslatable) {
+                                if (attributeTranslatable.getKey().startsWith(attributeTranslationKey)) {
+                                    isProjectileAttributeLine = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (isProjectileAttributeLine && attributeValue > 0) {
+                    Text greenAttributeLine = Text.literal(" ")
+                            .append(Text.translatable("attribute.modifier.equals." + EntityAttributeModifier.Operation.ADD_VALUE.getId(),
+                                    AttributeModifiersComponent.DECIMAL_FORMAT.format(attributeValue), Text.translatable(attributeTranslationKey)))
+                            .formatted(Formatting.DARK_GREEN);
+                    tooltip.set(i, greenAttributeLine);
+                }
+            }
+        }
+    }
+    private static void fixPullTime(List<Text> tooltip) {
+        String attributeTranslationKey = "attribute.kielsonsapi.pull_time";
         for (int i = 0; i < tooltip.size(); i++) {
             Text line = tooltip.get(i);
             TextContent content = line.getContent();
