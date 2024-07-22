@@ -21,8 +21,5 @@ public class KielsonsAPI implements ModInitializer {
 			if(original == 0f || livingEntity.getAttributeInstance(KielsonsEntityAttributes.HEALING_MULTIPLIER) == null) return original;
 			return (float) (original * livingEntity.getAttributeValue(KielsonsEntityAttributes.HEALING_MULTIPLIER));
 		});
-
-		((CustomRangedWeapon) Items.BOW).setRangedWeaponConfig(RangedConfig.BOW);
-		((CustomRangedWeapon) Items.CROSSBOW).setRangedWeaponConfig(RangedConfig.CROSSBOW);
 	}
 }

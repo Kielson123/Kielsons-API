@@ -1,24 +1,41 @@
 package com.kielson.mixin;
 
 import com.kielson.KielsonsEntityAttributes;
-import com.kielson.util.CustomRangedWeapon;
-import com.kielson.util.RangedConfig;
-import com.kielson.util.ScalingUtil;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.BowItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+
+import static com.kielson.KielsonsAPI.MOD_ID;
 
 @Mixin(BowItem.class)
-public class BowItemMixin {
-    private RangedConfig config() {
+abstract class BowItemMixin extends RangedWeaponItem {
+
+    BowItemMixin(Item.Settings settings) {
+        super(settings);
+    }
+
+    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/RangedWeaponItem;<init>(Lnet/minecraft/item/Item$Settings;)V"))
+    private static Settings addCustomAttributes(Settings settings){
+        return settings.attributeModifiers(createAttributeModifiers());
+    }
+
+    @Unique
+    private static AttributeModifiersComponent createAttributeModifiers() {
+        return AttributeModifiersComponent.builder()
+                .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), 6.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsEntityAttributes.DRAW_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), 20.0, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .build();
+    }
+
+    /*private RangedConfig config() {
         return ((CustomRangedWeapon) this).getRangedWeaponConfig();
     }
 
@@ -32,10 +49,6 @@ public class BowItemMixin {
         }
         return f;
     }
-
-    /**
-     * Apply custom pull time
-     */
     @WrapOperation(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/BowItem;getPullProgress(I)F"))
     private float applyCustomPullTime(int ticks, Operation<Float> original) {
         if (config().pull_time() > 0) {
@@ -48,9 +61,6 @@ public class BowItemMixin {
     @Unique private static final float STANDARD_DAMAGE = 6;
     @Unique private static final float STANDARD_VELOCITY = 3.0F;
 
-    /**
-     * Apply custom velocity and damage-
-     */
     @Inject(method = "shoot", at = @At(value = "RETURN"))
     private void applyCustomVelocityAndDamage(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
@@ -65,5 +75,5 @@ public class BowItemMixin {
                 persistentProjectile.setDamage(finalDamage);
             }
         }
-    }
+    }*/
 }

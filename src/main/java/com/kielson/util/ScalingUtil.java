@@ -37,10 +37,24 @@ public class ScalingUtil {
         return new Scaling(velocityMultiplier, damageMultiplier);
     }
 
+    /**
+     * Boosts arrow velocity
+     * @param standardVelocity default arrow velocity
+     * @param customVelocity non-default arrow velocity
+     * @return value of customVelocity divided by standardVelocity
+     */
     public static double arrowVelocityMultiplier(double standardVelocity, double customVelocity) {
         return customVelocity / standardVelocity;
     }
 
+    /**
+     * Boosts damage based on the RANGED_DAMAGE attribute
+     * @param standardDamage default arrow damage
+     * @param attributeDamage value of RANGED_DAMAGE attribute
+     * @param standardVelocity default arrow velocity
+     * @param customVelocity non-default arrow velocity
+     * @return value of RANGED_DAMAGE divided by default arrow damage with counteraction of custom velocity damage boost
+     */
     public static double arrowDamageMultiplier(double standardDamage, double attributeDamage, double standardVelocity, double customVelocity) {
         // Boost damage based on the attribute
         var multiplier = (attributeDamage / standardDamage);

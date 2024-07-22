@@ -5,13 +5,11 @@
   "mixins": [
     "BlockMixin",
     "BowItemMixin",
-    "CrossbowItemMixin",
     "EntityMixin",
     "LivingEntityMixin",
     "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
     "ProjectileEntityMixin",
-    "RangedWeaponItemMixin",
     "TargetPredicateMixin"
   ],
   "injectors": {

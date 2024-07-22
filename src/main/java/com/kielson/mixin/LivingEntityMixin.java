@@ -110,7 +110,7 @@ abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "getItemUseTimeLeft", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "getItemUseTimeLeft", at = @At("HEAD"), cancellable = true)
     private void KielsonsAPI$getItemUseTimeLeft(CallbackInfoReturnable<Integer> info) {
         int value = itemUseTimeLeft;
         if (livingEntity.isUsingItem())  {
@@ -122,5 +122,5 @@ abstract class LivingEntityMixin extends Entity {
                 info.setReturnValue(activeItemStack.getMaxUseTime(livingEntity) - newProgress);
             }
         }
-    }
+    }*/
 }
