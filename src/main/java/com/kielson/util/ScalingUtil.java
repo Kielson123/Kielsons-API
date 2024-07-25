@@ -1,8 +1,5 @@
 package com.kielson.util;
 
-import net.minecraft.item.BowItem;
-import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
 
 public class ScalingUtil {
     private static final float STANDARD_BOW_VELOCITY = 3F;
@@ -15,7 +12,7 @@ public class ScalingUtil {
 
     public record Scaling(double velocity, double damage) { }
 
-    public static Scaling scaling(ItemStack itemStack, double damage) {
+    /*public static Scaling scaling(ItemStack itemStack, double damage) {
         var item = itemStack.getItem();
         Scaling baseline;
         if (item instanceof BowItem) {
@@ -35,7 +32,7 @@ public class ScalingUtil {
         }
         var damageMultiplier = arrowDamageMultiplier(baseline.damage, damage, baseline.velocity, 0);
         return new Scaling(velocityMultiplier, damageMultiplier);
-    }
+    }*/
 
     /**
      * Boosts arrow velocity

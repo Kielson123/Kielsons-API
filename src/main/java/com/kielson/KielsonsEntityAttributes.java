@@ -19,7 +19,7 @@ public class KielsonsEntityAttributes {
     public static final RegistryEntry<EntityAttribute> ITEM_PICK_UP_RANGE = register("item_pick_up_range", 0, -64, 64);
     public static final RegistryEntry<EntityAttribute> RANGED_DAMAGE = register("ranged_damage", 0, 0, 2048);
     public static final RegistryEntry<EntityAttribute> RANGED_ACCURACY = register("ranged_accuracy", 0, -1024, 1024);
-    public static final RegistryEntry<EntityAttribute> PULL_TIME = register("pull_time", 100, 0, 2048);
+    public static final RegistryEntry<EntityAttribute> PULL_TIME = register("pull_time", 0, 0, 2048);
 
     private static RegistryEntry<EntityAttribute> register(String name, double base, double min, double max) {
         EntityAttribute attribute = new ClampedEntityAttribute("attribute." + MOD_ID + '.' + name, base, min, max).setTracked(true);
