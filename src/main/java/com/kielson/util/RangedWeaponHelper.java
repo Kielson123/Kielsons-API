@@ -1,11 +1,17 @@
 package com.kielson.util;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,5 +29,17 @@ public class RangedWeaponHelper {
             }
         }
         return Optional.of(level);
+    }
+
+    public static Optional<Double> getAttributeValue(ItemStack itemStack, RegistryEntry<EntityAttribute> entityAttribute){
+        List<AttributeModifiersComponent.Entry> attributeModifiers = Objects.requireNonNull(itemStack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS)).modifiers();
+        double attributeValue = 0.0;
+        for (AttributeModifiersComponent.Entry modifier : attributeModifiers) {
+            if (modifier.attribute() == entityAttribute) {
+                EntityAttributeModifier attributeModifier = modifier.modifier();
+                attributeValue += attributeModifier.value();
+            }
+        }
+        return attributeValue > 0 ? Optional.of(attributeValue) : Optional.empty();
     }
 }
