@@ -70,7 +70,7 @@ public class TooltipHelper {
             TextContent content = line.getContent();
             if (content instanceof TranslatableTextContent translatable) {
                 boolean isProjectileAttributeLine = false;
-                double attributeValue = -1.0;
+                double attributeValue = 0.0;
                 if (translatable.getKey().startsWith("attribute.modifier.plus.0")) {
                     for (Object arg : translatable.getArgs()) {
                         if (arg instanceof String string) {
@@ -108,7 +108,7 @@ public class TooltipHelper {
             TextContent content = line.getContent();
             if (content instanceof TranslatableTextContent translatable) {
                 boolean isProjectileAttributeLine = false;
-                double attributeValue = -1.0;
+                double attributeValue = 0.0;
                 if (translatable.getKey().startsWith("attribute.modifier.plus.0")) {
                     for (Object arg : translatable.getArgs()) {
                         if (arg instanceof String string) {
