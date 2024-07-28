@@ -64,7 +64,7 @@ public class TooltipHelper {
     }
 
     private static void fixRangedDamage(List<Text> tooltip, ItemStack stack) {
-        String attributeTranslationKey = "attribute.kielsonsapi.ranged_damage";
+        String attributeTranslationKey = "attribute.name.generic.ranged_damage";
         for (int i = 0; i < tooltip.size(); i++) {
             Text line = tooltip.get(i);
             TextContent content = line.getContent();
@@ -102,7 +102,7 @@ public class TooltipHelper {
         }
     }
     private static void fixPullTime(List<Text> tooltip, ItemStack stack) {
-        String attributeTranslationKey = "attribute.kielsonsapi.pull_time";
+        String attributeTranslationKey = "attribute.name.generic.pull_time";
         for (int i = 0; i < tooltip.size(); i++) {
             Text line = tooltip.get(i);
             TextContent content = line.getContent();

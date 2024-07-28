@@ -1,6 +1,7 @@
 package com.kielson.item;
 
 import com.kielson.KielsonsEntityAttributes;
+import com.kielson.util.BowInterface;
 import com.kielson.util.RangedWeaponHelper;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -10,30 +11,34 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static com.kielson.KielsonsAPI.MOD_ID;
 
-public class CustomBow extends BowItem {
+public class CustomBow extends RangedWeaponItem implements BowInterface {
     private final double projectileVelocity;
 
     public final static HashSet<CustomBow> instances = new HashSet<>();
 
     public CustomBow(double rangedDamage, double pullTime, double projectileVelocity, Settings settings) {
         super(settings.attributeModifiers(AttributeModifiersComponent.builder()
-                .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_bow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_bow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .build()));
 
         instances.add(this);
@@ -66,12 +71,22 @@ public class CustomBow extends BowItem {
     }
 
     @Override
+    public Predicate<ItemStack> getProjectiles() {
+        return BOW_PROJECTILES;
+    }
+
+    @Override
+    public int getRange() {
+        return 15;
+    }
+
+    @Override
     protected void shoot(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target) {
         projectile.setVelocity(shooter, shooter.getPitch(), shooter.getYaw() + yaw, 0.0f, speed, divergence);
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
             double damage = shooter.getAttributeValue(KielsonsEntityAttributes.RANGED_DAMAGE) / projectileVelocity;
             ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
-            if (handStack.getItem() instanceof BowItem && RangedWeaponHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
+            if (handStack.getItem() instanceof BowInterface && RangedWeaponHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
                 damage += (int) ((damage * 0.25) * (RangedWeaponHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
             }
             persistentProjectile.setDamage(damage);
@@ -80,7 +95,7 @@ public class CustomBow extends BowItem {
 
     public static float getPullProgress(int useTicks, LivingEntity user, ItemStack itemStack) {
         float pullTime = (float) user.getAttributeValue(KielsonsEntityAttributes.PULL_TIME);
-        if (itemStack.getItem() instanceof BowItem && RangedWeaponHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).isPresent()){
+        if (itemStack.getItem() instanceof BowInterface && RangedWeaponHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).isPresent()){
             pullTime -= 0.25f * RangedWeaponHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).get();
         }
         pullTime *= 20.0f;
@@ -90,5 +105,28 @@ public class CustomBow extends BowItem {
             f = 1.0F;
         }
         return f;
+    }
+
+
+    @Override
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+        return 72000;
+    }
+
+    @Override
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BOW;
+    }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack itemStack = user.getStackInHand(hand);
+        boolean bl = !user.getProjectileType(itemStack).isEmpty();
+        if (!user.isInCreativeMode() && !bl) {
+            return TypedActionResult.fail(itemStack);
+        } else {
+            user.setCurrentHand(hand);
+            return TypedActionResult.consume(itemStack);
+        }
     }
 }

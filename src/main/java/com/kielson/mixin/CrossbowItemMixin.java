@@ -1,6 +1,7 @@
 package com.kielson.mixin;
 
 import com.kielson.KielsonsEntityAttributes;
+import com.kielson.util.CrossbowInterface;
 import com.kielson.util.RangedWeaponHelper;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.component.type.AttributeModifierSlot;
@@ -27,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import static com.kielson.KielsonsAPI.MOD_ID;
 
 @Mixin(CrossbowItem.class)
-abstract class CrossbowItemMixin extends RangedWeaponItem {
+abstract class CrossbowItemMixin extends RangedWeaponItem implements CrossbowInterface {
     @Unique private static final double PROJECTILE_DAMAGE = 9.0;
     @Unique private static final double PULL_TIME = 1.25;
     @Unique private static final double PROJECTILE_VELOCITY = 3.15;
@@ -38,15 +39,10 @@ abstract class CrossbowItemMixin extends RangedWeaponItem {
 
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/RangedWeaponItem;<init>(Lnet/minecraft/item/Item$Settings;)V"))
     private static Settings KielsonsAPI$addCustomAttributes(Settings settings){
-        return settings.attributeModifiers(createAttributeModifiers());
-    }
-
-    @Unique
-    private static AttributeModifiersComponent createAttributeModifiers() {
-        return AttributeModifiersComponent.builder()
+        return settings.attributeModifiers(AttributeModifiersComponent.builder()
                 .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "crossbow"), PROJECTILE_DAMAGE, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "crossbow"), PULL_TIME, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .build();
+                .build());
     }
 
     @ModifyArg(method = "getPullTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/enchantment/EnchantmentHelper;getCrossbowChargeTime(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;F)F"), index = 2)

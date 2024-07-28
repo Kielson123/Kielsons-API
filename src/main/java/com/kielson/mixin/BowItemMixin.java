@@ -1,6 +1,7 @@
 package com.kielson.mixin;
 
 import com.kielson.KielsonsEntityAttributes;
+import com.kielson.util.BowInterface;
 import com.kielson.util.RangedWeaponHelper;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -24,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static com.kielson.KielsonsAPI.MOD_ID;
 
 @Mixin(BowItem.class)
-abstract class BowItemMixin extends RangedWeaponItem {
+abstract class BowItemMixin extends RangedWeaponItem implements BowInterface {
     @Unique private static final double PROJECTILE_DAMAGE = 6.0;
     @Unique private static final double PULL_TIME = 1.0;
     @Unique private static final double PROJECTILE_VELOCITY = 3.0;
@@ -36,15 +37,10 @@ abstract class BowItemMixin extends RangedWeaponItem {
 
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/RangedWeaponItem;<init>(Lnet/minecraft/item/Item$Settings;)V"))
     private static Settings KielsonsAPI$addCustomAttributes(Settings settings){
-        return settings.attributeModifiers(createAttributeModifiers());
-    }
-
-    @Unique
-    private static AttributeModifiersComponent createAttributeModifiers() {
-        return AttributeModifiersComponent.builder()
+        return settings.attributeModifiers(AttributeModifiersComponent.builder()
                 .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), PROJECTILE_DAMAGE, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), PULL_TIME, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .build();
+                .build());
     }
 
     @Unique

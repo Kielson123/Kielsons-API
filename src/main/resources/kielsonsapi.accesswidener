@@ -7,5 +7,3 @@ accessible method net/minecraft/item/CrossbowItem getLoadingSounds (Lnet/minecra
 accessible method net/minecraft/item/CrossbowItem calcVelocity (Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/util/math/Vec3d;F)Lorg/joml/Vector3f;
 
 accessible field net/minecraft/entity/ai/TargetPredicate baseMaxDistance D
-accessible field net/minecraft/item/CrossbowItem charged Z
-accessible field net/minecraft/item/CrossbowItem loaded Z
