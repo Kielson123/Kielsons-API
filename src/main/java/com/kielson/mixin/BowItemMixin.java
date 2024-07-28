@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static com.kielson.KielsonsAPI.MOD_ID;
 
 @Mixin(BowItem.class)
-abstract class BowItemMixin extends RangedWeaponItem{
+abstract class BowItemMixin extends RangedWeaponItem {
     @Unique private static final double PROJECTILE_DAMAGE = 6.0;
     @Unique private static final double PULL_TIME = 1.0;
     @Unique private static final double PROJECTILE_VELOCITY = 3.0;

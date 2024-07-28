@@ -2,7 +2,6 @@ package com.kielson.item;
 
 import com.kielson.KielsonsEntityAttributes;
 import com.kielson.util.RangedWeaponHelper;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -12,18 +11,12 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
 import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -38,25 +31,18 @@ import java.util.List;
 import static com.kielson.KielsonsAPI.MOD_ID;
 
 public class CustomCrossbow extends CrossbowItem {
-    private static double rangedDamage;
-    private static double pullTime;
-    private static double projectileVelocity;
+    private final double projectileVelocity;
 
     public final static HashSet<CustomCrossbow> instances = new HashSet<>();
 
     public CustomCrossbow(double rangedDamage, double pullTime, double projectileVelocity, Settings settings) {
-        super(settings.attributeModifiers(createAttributeModifiers()));
-        instances.add(this);
-        CustomCrossbow.rangedDamage = rangedDamage;
-        CustomCrossbow.pullTime = pullTime;
-        CustomCrossbow.projectileVelocity = projectileVelocity;
-    }
-
-    private static AttributeModifiersComponent createAttributeModifiers() {
-        return AttributeModifiersComponent.builder()
+        super(settings.attributeModifiers(AttributeModifiersComponent.builder()
                 .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "crossbow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "crossbow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .build();
+                .build()));
+
+        instances.add(this);
+        this.projectileVelocity = projectileVelocity;
     }
 
     @Override
@@ -76,7 +62,7 @@ public class CustomCrossbow extends CrossbowItem {
         return TypedActionResult.fail(itemStack);
     }
 
-    private static float getSpeed(ChargedProjectilesComponent stack) {
+    private float getSpeed(ChargedProjectilesComponent stack) {
         if (stack.contains(Items.FIREWORK_ROCKET)) {
             return (float) (projectileVelocity / 1.96875);
         }

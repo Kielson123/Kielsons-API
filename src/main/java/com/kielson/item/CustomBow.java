@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.BowItem;
-import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -27,25 +26,18 @@ import java.util.List;
 import static com.kielson.KielsonsAPI.MOD_ID;
 
 public class CustomBow extends BowItem {
-    private static double rangedDamage;
-    private static double pullTime;
-    private static double projectileVelocity;
+    private final double projectileVelocity;
 
     public final static HashSet<CustomBow> instances = new HashSet<>();
 
     public CustomBow(double rangedDamage, double pullTime, double projectileVelocity, Settings settings) {
-        super(settings.attributeModifiers(createAttributeModifiers()));
-        instances.add(this);
-        CustomBow.rangedDamage = rangedDamage;
-        CustomBow.pullTime = pullTime;
-        CustomBow.projectileVelocity = projectileVelocity;
-    }
-
-    private static AttributeModifiersComponent createAttributeModifiers() {
-        return AttributeModifiersComponent.builder()
+        super(settings.attributeModifiers(AttributeModifiersComponent.builder()
                 .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .build();
+                .build()));
+
+        instances.add(this);
+        this.projectileVelocity = projectileVelocity;
     }
 
     @Override
