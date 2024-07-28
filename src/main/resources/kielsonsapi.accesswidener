@@ -2,5 +2,10 @@ accessWidener v2 named
 
 accessible method net/minecraft/component/DataComponentTypes register (Ljava/lang/String;Ljava/util/function/UnaryOperator;)Lnet/minecraft/component/ComponentType;
 accessible method net/minecraft/loot/function/ApplyBonusLootFunction$Formula getValue (Lnet/minecraft/util/math/random/Random;II)I
+accessible method net/minecraft/item/CrossbowItem getSoundPitch (Lnet/minecraft/util/math/random/Random;I)F
+accessible method net/minecraft/item/CrossbowItem getLoadingSounds (Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/CrossbowItem$LoadingSounds;
+accessible method net/minecraft/item/CrossbowItem calcVelocity (Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/util/math/Vec3d;F)Lorg/joml/Vector3f;
 
 accessible field net/minecraft/entity/ai/TargetPredicate baseMaxDistance D
+accessible field net/minecraft/item/CrossbowItem charged Z
+accessible field net/minecraft/item/CrossbowItem loaded Z

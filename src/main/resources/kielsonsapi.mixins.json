@@ -20,6 +20,7 @@
     "client.AbstractClientPlayerEntityMixin",
     "client.HeldItemRendererMixin",
     "client.MinecraftClientMixin",
+    "client.ModelPredicateProviderRegistryMixin",
     "client.PlayerEntityRendererMixin"
   ]
 }

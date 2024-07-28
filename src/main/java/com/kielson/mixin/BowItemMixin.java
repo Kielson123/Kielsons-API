@@ -35,7 +35,7 @@ abstract class BowItemMixin extends RangedWeaponItem{
     }
 
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/RangedWeaponItem;<init>(Lnet/minecraft/item/Item$Settings;)V"))
-    private static Settings addCustomAttributes(Settings settings){
+    private static Settings KielsonsAPI$addCustomAttributes(Settings settings){
         return settings.attributeModifiers(createAttributeModifiers());
     }
 
@@ -50,7 +50,7 @@ abstract class BowItemMixin extends RangedWeaponItem{
     @Unique
     public float getCustomPullProgress(int useTicks, LivingEntity user, ItemStack itemStack) {
         float pullTime = (float) user.getAttributeValue(KielsonsEntityAttributes.PULL_TIME);
-        if (itemStack.getItem() instanceof CrossbowItem && RangedWeaponHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).isPresent()){
+        if (itemStack.getItem() instanceof BowItem && RangedWeaponHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).isPresent()){
             pullTime -= 0.25f * RangedWeaponHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).get();
         }
         pullTime *= 20.0f;
@@ -66,7 +66,7 @@ abstract class BowItemMixin extends RangedWeaponItem{
     @Unique private ItemStack itemStack;
 
     @WrapOperation(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/BowItem;getPullProgress(I)F"))
-    private float applyCustomPullTime(int useTicks, Operation<Float> original, @Local(argsOnly = true) LivingEntity user, @Local(argsOnly = true) ItemStack itemStack) {
+    private float KielsonsAPI$applyCustomPullTime(int useTicks, Operation<Float> original, @Local(argsOnly = true) LivingEntity user, @Local(argsOnly = true) ItemStack itemStack) {
         this.ticks = useTicks;
         this.user = user;
         this.itemStack = itemStack;
@@ -74,16 +74,16 @@ abstract class BowItemMixin extends RangedWeaponItem{
     }
 
     @ModifyArg(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/BowItem;shootAll(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;Ljava/util/List;FFZLnet/minecraft/entity/LivingEntity;)V"), index = 5)
-    private float applyCustomVelocity(float par6){
+    private float KielsonsAPI$applyCustomVelocity(float par6){
         return (float) (getCustomPullProgress(ticks, user, itemStack) * PROJECTILE_VELOCITY);
     }
 
     @Inject(method = "shoot", at = @At(value = "RETURN"))
-    private void applyCustomDamage(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
+    private void KielsonsAPI$applyCustomDamage(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
             double damage = shooter.getAttributeValue(KielsonsEntityAttributes.RANGED_DAMAGE) / PROJECTILE_VELOCITY;
             ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
-            if (handStack.getItem() instanceof CrossbowItem && RangedWeaponHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
+            if (handStack.getItem() instanceof BowItem && RangedWeaponHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
                 damage += (int) ((damage * 0.25) * (RangedWeaponHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
             }
             persistentProjectile.setDamage(damage);

@@ -6,8 +6,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ChargedProjectilesComponent;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -17,7 +15,6 @@ import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,9 +23,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Optional;
-import java.util.Set;
 
 import static com.kielson.KielsonsAPI.MOD_ID;
 
@@ -43,7 +37,7 @@ abstract class CrossbowItemMixin extends RangedWeaponItem {
     }
 
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/RangedWeaponItem;<init>(Lnet/minecraft/item/Item$Settings;)V"))
-    private static Settings addCustomAttributes(Settings settings){
+    private static Settings KielsonsAPI$addCustomAttributes(Settings settings){
         return settings.attributeModifiers(createAttributeModifiers());
     }
 
@@ -56,12 +50,12 @@ abstract class CrossbowItemMixin extends RangedWeaponItem {
     }
 
     @ModifyArg(method = "getPullTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/enchantment/EnchantmentHelper;getCrossbowChargeTime(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;F)F"), index = 2)
-    private static float applyCustomPullTime(float baseCrossbowChargeTime, @Local(argsOnly = true) LivingEntity user) {
+    private static float KielsonsAPI$applyCustomPullTime(float baseCrossbowChargeTime, @Local(argsOnly = true) LivingEntity user) {
         return (float) user.getAttributeValue(KielsonsEntityAttributes.PULL_TIME);
     }
 
     @Inject(method = "shoot", at = @At(value = "RETURN"))
-    private void applyCustomDamage(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
+    private void KielsonsAPI$applyCustomDamage(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
             double damage = shooter.getAttributeValue(KielsonsEntityAttributes.RANGED_DAMAGE) / PROJECTILE_VELOCITY;
             ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
@@ -72,10 +66,10 @@ abstract class CrossbowItemMixin extends RangedWeaponItem {
         }
     }
 
-    @Inject(method = "getSpeed", at = @At("RETURN"), cancellable = true)
-    private static void applyCustomVelocity(ChargedProjectilesComponent stack, CallbackInfoReturnable<Float> cir){
+    @Inject(method = "getSpeed", at = @At("HEAD"), cancellable = true)
+    private static void KielsonsAPI$applyCustomVelocity(ChargedProjectilesComponent stack, CallbackInfoReturnable<Float> cir){
         if (stack.contains(Items.FIREWORK_ROCKET)) {
-            return;
+            cir.setReturnValue((float) (PROJECTILE_VELOCITY / 1.96875));
         }
         cir.setReturnValue((float) PROJECTILE_VELOCITY);
     }

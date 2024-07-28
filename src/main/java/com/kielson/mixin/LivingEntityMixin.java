@@ -117,18 +117,4 @@ abstract class LivingEntityMixin extends Entity {
             return -waterSpeed.getValue();
         }
     }
-
-    /*@Inject(method = "getItemUseTimeLeft", at = @At("HEAD"), cancellable = true)
-    private void KielsonsAPI$getItemUseTimeLeft(CallbackInfoReturnable<Integer> info) {
-        int value = itemUseTimeLeft;
-        if (livingEntity.isUsingItem())  {
-            UseAction useAction = activeItemStack.getUseAction();
-            if (useAction == UseAction.BOW || useAction == UseAction.CROSSBOW) {
-                int progress = activeItemStack.getMaxUseTime(livingEntity) - value;
-                double haste = livingEntity.getAttributeValue(KielsonsEntityAttributes.PULL_TIME);
-                int newProgress = (int) (progress * (haste / livingEntity.getAttributeBaseValue(KielsonsEntityAttributes.PULL_TIME)));
-                info.setReturnValue(activeItemStack.getMaxUseTime(livingEntity) - newProgress);
-            }
-        }
-    }*/
 }
