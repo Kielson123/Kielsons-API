@@ -26,6 +26,6 @@ abstract class TargetPredicateMixin {
         if (instance == null) {
             return e;
         }
-        return Math.max((targetPredicate.baseMaxDistance * d) - (0.1 * instance.getValue()), 2.0);
+        return Math.max((targetPredicate.baseMaxDistance * d) + (0.1 * instance.getValue()), 2.0);
     }
 }

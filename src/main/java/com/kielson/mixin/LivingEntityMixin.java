@@ -12,7 +12,6 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.World;
@@ -30,8 +29,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 abstract class LivingEntityMixin extends Entity {
     @Shadow @Nullable protected PlayerEntity attackingPlayer;
     @Unique private final LivingEntity livingEntity = (LivingEntity) (Object) this;
-    @Shadow protected int itemUseTimeLeft;
-    @Shadow protected ItemStack activeItemStack;
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
