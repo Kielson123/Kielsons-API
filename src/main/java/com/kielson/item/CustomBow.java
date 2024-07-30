@@ -32,6 +32,7 @@ import static com.kielson.KielsonsAPI.MOD_ID;
 
 public class CustomBow extends RangedWeaponItem implements BowInterface {
     private final double projectileVelocity;
+    private final double pullTime;
 
     public final static HashSet<CustomBow> instances = new HashSet<>();
 
@@ -43,6 +44,7 @@ public class CustomBow extends RangedWeaponItem implements BowInterface {
 
         instances.add(this);
         this.projectileVelocity = projectileVelocity;
+        this.pullTime = pullTime;
     }
 
     @Override
@@ -110,7 +112,7 @@ public class CustomBow extends RangedWeaponItem implements BowInterface {
 
     @Override
     public int getMaxUseTime(ItemStack stack, LivingEntity user) {
-        return 72000;
+        return (int) (72000 * pullTime);
     }
 
     @Override
