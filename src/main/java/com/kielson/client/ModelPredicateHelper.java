@@ -18,7 +18,7 @@ public class ModelPredicateHelper {
                 return 0.0F;
             } else {
                 assert RangedWeaponHelper.getAttributeValue(stack, KielsonsEntityAttributes.PULL_TIME).isPresent();
-                return entity.getActiveItem() != stack ? 0.0F : (float) ((stack.getMaxUseTime(entity) - entity.getItemUseTimeLeft()) / RangedWeaponHelper.getAttributeValue(stack, KielsonsEntityAttributes.PULL_TIME).get());
+                return entity.getActiveItem() != stack ? 0.0F : (float) ((stack.getMaxUseTime(entity) - entity.getItemUseTimeLeft()) / (RangedWeaponHelper.getAttributeValue(stack, KielsonsEntityAttributes.PULL_TIME).get() * 20.0));
             }
         });
         ModelPredicateProviderRegistry.register(bow, Identifier.of("pulling"), (stack, world, entity, seed) ->
