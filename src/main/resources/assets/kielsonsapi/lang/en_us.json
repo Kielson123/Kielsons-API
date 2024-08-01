@@ -7,5 +7,7 @@
   "attribute.name.generic.item_pick_up_range": "Item Pick Up Range",
   "attribute.name.generic.ranged_damage": "Ranged Damage",
   "attribute.name.generic.accuracy": "Ranged Accuracy",
-  "attribute.name.generic.pull_time": "s Pull Time"
+  "attribute.name.generic.pull_time": "s Pull Time",
+
+  "item.modifiers.two_handed": "Two-Handed"
 }

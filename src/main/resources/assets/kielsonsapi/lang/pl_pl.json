@@ -7,5 +7,7 @@
   "attribute.name.generic.item_pick_up_range": "zasięgu podniesienia przedmiotu",
   "attribute.name.generic.ranged_damage": "obrażeń zasięgowych",
   "attribute.name.generic.accuracy": "celności",
-  "attribute.name.generic.pull_time": "s czasu naciągnięcia"
+  "attribute.name.generic.pull_time": "s czasu naciągnięcia",
+
+  "item.modifiers.two_handed": "Oburęczny"
 }
