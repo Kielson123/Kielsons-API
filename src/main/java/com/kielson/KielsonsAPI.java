@@ -16,6 +16,7 @@ public class KielsonsAPI implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		KielsonsEntityAttributes.registerEntityAttributes();
+		KielsonsAPIComponents.registerModComponents();
 
 		KielsonsEvents.ON_HEAL.register((livingEntity, original) -> {
 			if(original == 0f || livingEntity.getAttributeInstance(KielsonsEntityAttributes.HEALING_MULTIPLIER) == null) return original;
