@@ -1,16 +1,20 @@
 package com.kielson.mixin;
 
+import com.kielson.KielsonsAPIComponents;
 import com.kielson.KielsonsEntityAttributes;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -19,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
 abstract class PlayerEntityMixin extends LivingEntity{
+    @Unique private final PlayerEntity player = (PlayerEntity) (Object)this;
     @Shadow public float experienceProgress;
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
@@ -43,8 +48,7 @@ abstract class PlayerEntityMixin extends LivingEntity{
      */
     @ModifyVariable(method = "tickMovement", at = @At("STORE"))
     private Box KielsonsAPI$adjustCollectionRange(Box original) {
-        PlayerEntity thisPlayer = (PlayerEntity)(Object) this;
-        EntityAttributeInstance instance = thisPlayer.getAttributeInstance(KielsonsEntityAttributes.ITEM_PICK_UP_RANGE);
+        EntityAttributeInstance instance = player.getAttributeInstance(KielsonsEntityAttributes.ITEM_PICK_UP_RANGE);
         if (instance != null) {
             double value = instance.getValue();
             if (original.getLengthX() + value < 0) {
@@ -54,5 +58,25 @@ abstract class PlayerEntityMixin extends LivingEntity{
             return original.expand(value, value / 2, value);
         }
         return original;
+    }
+
+    @Inject(method = "getEquippedStack", at = @At("HEAD"), cancellable = true)
+    private void Kielson$getEquippedStack(EquipmentSlot slot, CallbackInfoReturnable<ItemStack> cir) {
+        if (slot.equals(EquipmentSlot.MAINHAND)) {
+            ItemStack offHandStack = player.getInventory().offHand.getFirst();
+            Boolean offHandStackComponent = offHandStack.get(KielsonsAPIComponents.TWO_HANDED);
+
+            if (Boolean.TRUE.equals(offHandStackComponent)) {
+                cir.setReturnValue(ItemStack.EMPTY);
+            }
+        }
+        else if (slot.equals(EquipmentSlot.OFFHAND)) {
+            ItemStack mainHandStack = player.getInventory().getMainHandStack();
+            Boolean mainHandStackComponent = mainHandStack.get(KielsonsAPIComponents.TWO_HANDED);
+
+            if (Boolean.TRUE.equals(mainHandStackComponent)) {
+                cir.setReturnValue(ItemStack.EMPTY);
+            }
+        }
     }
 }

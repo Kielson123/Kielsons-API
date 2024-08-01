@@ -11,6 +11,7 @@
     "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
     "ProjectileEntityMixin",
+    "ServerPlayNetworkHandlerMixin",
     "TargetPredicateMixin"
   ],
   "injectors": {
