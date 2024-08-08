@@ -18,5 +18,5 @@ public class KielsonsAPIComponents {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, id, ((ComponentType.Builder)builderOperator.apply(ComponentType.builder())).build());
     }
 
-    public static void registerModComponents() {int x = 1;}
+    public static void initialize() {}
 }

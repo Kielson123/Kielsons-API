@@ -35,5 +35,5 @@ public class KielsonsEntityAttributes {
         return Registry.registerReference(Registries.ATTRIBUTE, Identifier.of(MOD_ID, name), attribute);
     }
 
-    public static void registerEntityAttributes() {int x = 1;}
+    public static void initialize() {}
 }
