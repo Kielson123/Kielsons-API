@@ -1,12 +1,15 @@
 package com.kielson.client;
 
+import com.kielson.KielsonsAPI;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.kielson.KielsonsAPIComponents.TWO_HANDED;
@@ -17,6 +20,12 @@ public class KielsonsAPIClient implements ClientModInitializer {
     public void onInitializeClient() {
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
             TooltipHelper.updateTooltipText(stack, lines);
+            addTwoHandedTooltip(stack, lines);
+        });
+    }
+
+    private void addTwoHandedTooltip(ItemStack stack, List<Text> lines){
+        if (!KielsonsAPI.isBetterCombatLoaded()) {
             if (Boolean.TRUE.equals(stack.get(TWO_HANDED))) {
                 Optional<Integer> goodValue = Optional.empty();
                 for (int i = 0; i < lines.size(); ++i) {
@@ -33,6 +42,6 @@ public class KielsonsAPIClient implements ClientModInitializer {
                 if (goodValue.isEmpty()) lines.addLast(text);
                 else lines.add(goodValue.get(), text);
             }
-        });
+        }
     }
 }
