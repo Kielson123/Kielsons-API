@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ServerPlayNetworkHandler.class)
-abstract class ServerPlayNetworkHandlerMixin {
+abstract class bc_ServerPlayNetworkHandlerMixin {
 
     @Redirect(method = "onPlayerAction", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getStackInHand(Lnet/minecraft/util/Hand;)Lnet/minecraft/item/ItemStack;"))
     public ItemStack Kielson$getStackInHand(ServerPlayerEntity instance, Hand hand) {

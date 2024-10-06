@@ -12,6 +12,7 @@ public class KielsonsAPI implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	private static final boolean isEnhancedCombatLoaded = FabricLoader.getInstance().isModLoaded("kielsons_enhanced_combat");
+	private static final boolean isBetterCombatLoaded = FabricLoader.getInstance().isModLoaded("bettercombat");
 
 	@Override
 	public void onInitialize() {
@@ -26,5 +27,8 @@ public class KielsonsAPI implements ModInitializer {
 
 	public static boolean isKielsonsEnhancedCombatLoaded(){
 		return isEnhancedCombatLoaded;
+	}
+	public static boolean isBetterCombatLoaded(){
+		return isBetterCombatLoaded;
 	}
 }

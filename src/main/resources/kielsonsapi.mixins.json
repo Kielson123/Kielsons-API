@@ -2,7 +2,9 @@
   "required": true,
   "package": "com.kielson.mixin",
   "compatibilityLevel": "JAVA_21",
+  "plugin": "com.kielson.KielsonsCompatibilityMixinPlugin",
   "mixins": [
+    "bc_ServerPlayNetworkHandlerMixin",
     "BlockMixin",
     "BowItemMixin",
     "CrossbowItemMixin",
@@ -11,7 +13,6 @@
     "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
     "ProjectileEntityMixin",
-    "ServerPlayNetworkHandlerMixin",
     "TargetPredicateMixin"
   ],
   "injectors": {
