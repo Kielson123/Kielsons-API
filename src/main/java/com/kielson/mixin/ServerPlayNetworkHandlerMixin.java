@@ -16,7 +16,7 @@ abstract class ServerPlayNetworkHandlerMixin {
         ItemStack result = null;
         switch (hand) {
             case MAIN_HAND -> result = instance.getInventory().getMainHandStack();
-            case OFF_HAND -> result = instance.getInventory().offHand.get(0);
+            case OFF_HAND -> result = instance.getInventory().offHand.getFirst();
         }
         return result;
     }
