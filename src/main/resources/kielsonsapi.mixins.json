@@ -2,9 +2,8 @@
   "required": true,
   "package": "com.kielson.mixin",
   "compatibilityLevel": "JAVA_21",
-  "plugin": "com.kielson.KielsonsCompatibilityMixinPlugin",
   "mixins": [
-    "bc_ServerPlayNetworkHandlerMixin",
+    "ServerPlayNetworkHandlerMixin",
     "BlockMixin",
     "BowItemMixin",
     "CrossbowItemMixin",
@@ -20,9 +19,6 @@
   },
   "client": [
     "client.AbstractClientPlayerEntityMixin",
-    "client.HeldItemRendererMixin",
-    "client.MinecraftClientMixin",
-    "client.ModelPredicateProviderRegistryMixin",
-    "client.PlayerEntityRendererMixin"
+    "client.HeldItemRendererMixin"
   ]
 }

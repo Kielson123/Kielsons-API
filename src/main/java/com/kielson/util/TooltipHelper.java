@@ -1,6 +1,5 @@
-package com.kielson.client;
+package com.kielson.util;
 
-import com.kielson.util.RangedWeaponHelper;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -17,12 +16,13 @@ import java.util.List;
 public class TooltipHelper {
 
     public static void updateTooltipText(ItemStack itemStack, List<Text> lines) {
-        if (itemStack.getItem() instanceof RangedWeaponItem) {
+        if(itemStack.getItem() instanceof RangedWeaponItem){
             mergeAttributeLines(lines);
             fixRangedDamage(lines, itemStack);
             fixPullTime(lines, itemStack);
         }
     }
+
 
     private static void mergeAttributeLines(List<Text> tooltip) {
         List<Text> heldInHandLines = new ArrayList<>();
@@ -69,15 +69,15 @@ public class TooltipHelper {
             Text line = tooltip.get(i);
             TextContent content = line.getContent();
             if (content instanceof TranslatableTextContent translatable) {
-                boolean isProjectileAttributeLine = false;
+                boolean isAttributeLine = false;
                 double attributeValue = 0.0;
                 if (translatable.getKey().startsWith("attribute.modifier.plus.0")) {
                     for (Object arg : translatable.getArgs()) {
                         if (arg instanceof String string) {
                             try {
                                 attributeValue = Double.parseDouble(string);
-                                if (RangedWeaponHelper.checkEnchantmentLevel(stack, Enchantments.POWER).isPresent()){
-                                    attributeValue += (attributeValue * 0.25) * (RangedWeaponHelper.checkEnchantmentLevel(stack, Enchantments.POWER).get() + 1);
+                                if (ItemHelper.checkEnchantmentLevel(stack, Enchantments.POWER).isPresent()){
+                                    attributeValue += (attributeValue * 0.25) * (ItemHelper.checkEnchantmentLevel(stack, Enchantments.POWER).get() + 1);
                                 }
                             } catch (Exception ignored) {
                             }
@@ -85,13 +85,13 @@ public class TooltipHelper {
                         if (arg instanceof Text attributeText) {
                             if (attributeText.getContent() instanceof TranslatableTextContent attributeTranslatable) {
                                 if (attributeTranslatable.getKey().startsWith(attributeTranslationKey)) {
-                                    isProjectileAttributeLine = true;
+                                    isAttributeLine = true;
                                 }
                             }
                         }
                     }
                 }
-                if (isProjectileAttributeLine) {
+                if (isAttributeLine) {
                     Text greenAttributeLine = Text.literal(" ")
                             .append(Text.translatable("attribute.modifier.equals." + EntityAttributeModifier.Operation.ADD_VALUE.getId(),
                                     AttributeModifiersComponent.DECIMAL_FORMAT.format(attributeValue < 0 ? 0 : attributeValue), Text.translatable(attributeTranslationKey)))
@@ -101,21 +101,22 @@ public class TooltipHelper {
             }
         }
     }
+
     private static void fixPullTime(List<Text> tooltip, ItemStack stack) {
         String attributeTranslationKey = "attribute.name.generic.pull_time";
         for (int i = 0; i < tooltip.size(); i++) {
             Text line = tooltip.get(i);
             TextContent content = line.getContent();
             if (content instanceof TranslatableTextContent translatable) {
-                boolean isProjectileAttributeLine = false;
+                boolean isAttributeLine = false;
                 double attributeValue = 0.0;
                 if (translatable.getKey().startsWith("attribute.modifier.plus.0")) {
                     for (Object arg : translatable.getArgs()) {
                         if (arg instanceof String string) {
                             try {
                                 attributeValue = Double.parseDouble(string);
-                                if (RangedWeaponHelper.checkEnchantmentLevel(stack, Enchantments.QUICK_CHARGE).isPresent()){
-                                    attributeValue -= 0.25 * RangedWeaponHelper.checkEnchantmentLevel(stack, Enchantments.QUICK_CHARGE).get();
+                                if (ItemHelper.checkEnchantmentLevel(stack, Enchantments.QUICK_CHARGE).isPresent()){
+                                    attributeValue -= 0.25 * ItemHelper.checkEnchantmentLevel(stack, Enchantments.QUICK_CHARGE).get();
                                 }
                             } catch (Exception ignored) {
 
@@ -124,13 +125,13 @@ public class TooltipHelper {
                         if (arg instanceof Text attributeText) {
                             if (attributeText.getContent() instanceof TranslatableTextContent attributeTranslatable) {
                                 if (attributeTranslatable.getKey().startsWith(attributeTranslationKey)) {
-                                    isProjectileAttributeLine = true;
+                                    isAttributeLine = true;
                                 }
                             }
                         }
                     }
                 }
-                if (isProjectileAttributeLine) {
+                if (isAttributeLine) {
                     Text greenAttributeLine = Text.literal(" ")
                             .append(Text.translatable("attribute.modifier.equals." + EntityAttributeModifier.Operation.ADD_VALUE.getId(),
                                     AttributeModifiersComponent.DECIMAL_FORMAT.format(attributeValue < 0 ? 0 : attributeValue), Text.translatable(attributeTranslationKey)))

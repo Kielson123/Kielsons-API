@@ -60,25 +60,4 @@ abstract class PlayerEntityMixin extends LivingEntity{
         }
         return original;
     }
-
-    @Inject(method = "getEquippedStack", at = @At("HEAD"), cancellable = true)
-    private void Kielson$getEquippedStack(EquipmentSlot slot, CallbackInfoReturnable<ItemStack> cir) {
-        if (!KielsonsAPI.isBetterCombatLoaded()){
-            if (slot.equals(EquipmentSlot.MAINHAND)) {
-                ItemStack offHandStack = player.getInventory().offHand.getFirst();
-                Boolean offHandStackComponent = offHandStack.get(KielsonsAPIComponents.TWO_HANDED);
-
-                if (Boolean.TRUE.equals(offHandStackComponent)) {
-                    cir.setReturnValue(ItemStack.EMPTY);
-                }
-            } else if (slot.equals(EquipmentSlot.OFFHAND)) {
-                ItemStack mainHandStack = player.getInventory().getMainHandStack();
-                Boolean mainHandStackComponent = mainHandStack.get(KielsonsAPIComponents.TWO_HANDED);
-
-                if (Boolean.TRUE.equals(mainHandStackComponent)) {
-                    cir.setReturnValue(ItemStack.EMPTY);
-                }
-            }
-        }
-    }
 }

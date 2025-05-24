@@ -2,7 +2,6 @@ package com.kielson;
 
 import com.kielson.events.KielsonsEvents;
 import net.fabricmc.api.ModInitializer;
-
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +26,5 @@ public class KielsonsAPI implements ModInitializer {
 
 	public static boolean isKielsonsEnhancedCombatLoaded(){
 		return isEnhancedCombatLoaded;
-	}
-	public static boolean isBetterCombatLoaded(){
-		return isBetterCombatLoaded;
 	}
 }

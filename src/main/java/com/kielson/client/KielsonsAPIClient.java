@@ -1,6 +1,6 @@
 package com.kielson.client;
 
-import com.kielson.KielsonsAPI;
+import com.kielson.util.TooltipHelper;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.item.ItemStack;
@@ -25,23 +25,21 @@ public class KielsonsAPIClient implements ClientModInitializer {
     }
 
     private void addTwoHandedTooltip(ItemStack stack, List<Text> lines){
-        if (!KielsonsAPI.isBetterCombatLoaded()) {
-            if (Boolean.TRUE.equals(stack.get(TWO_HANDED))) {
-                Optional<Integer> goodValue = Optional.empty();
-                for (int i = 0; i < lines.size(); ++i) {
-                    Text line = lines.get(i);
-                    TextContent content = line.getContent();
-                    if (content instanceof TranslatableTextContent translatable) {
-                        if (translatable.getKey().startsWith("item.modifiers") || translatable.getKey().startsWith("potion.whenDrank")) {
-                            goodValue = Optional.of(i);
-                            break;
-                        }
+        if (Boolean.TRUE.equals(stack.get(TWO_HANDED))) {
+            Optional<Integer> goodValue = Optional.empty();
+            for (int i = 0; i < lines.size(); ++i) {
+                Text line = lines.get(i);
+                TextContent content = line.getContent();
+                if (content instanceof TranslatableTextContent translatable) {
+                    if (translatable.getKey().startsWith("item.modifiers") || translatable.getKey().startsWith("potion.whenDrank")) {
+                        goodValue = Optional.of(i);
+                        break;
                     }
                 }
-                Text text = Text.empty().append(Text.translatable("item.modifiers.two_handed").formatted(Formatting.GRAY));
-                if (goodValue.isEmpty()) lines.addLast(text);
-                else lines.add(goodValue.get(), text);
             }
+            Text text = Text.empty().append(Text.translatable("item.modifiers.two_handed").formatted(Formatting.GRAY));
+            if (goodValue.isEmpty()) lines.addLast(text);
+            else lines.add(goodValue.get(), text);
         }
     }
 }

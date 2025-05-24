@@ -1,17 +1,18 @@
 package com.kielson.mixin;
 
+import com.kielson.KielsonsAPI;
+import com.kielson.KielsonsAPIComponents;
 import com.kielson.KielsonsEntityAttributes;
 import com.kielson.events.KielsonsEvents;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.World;
@@ -23,12 +24,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin extends Entity {
-    @Shadow @Nullable protected PlayerEntity attackingPlayer;
     @Unique private final LivingEntity livingEntity = (LivingEntity) (Object) this;
+    @Unique private final PlayerEntity attackingPlayer = livingEntity.getAttackingPlayer();
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -53,7 +55,7 @@ abstract class LivingEntityMixin extends Entity {
     /**
      * @author DaFuqs
      */
-    @ModifyArg(method = "travel(Lnet/minecraft/util/math/Vec3d;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;updateVelocity(FLnet/minecraft/util/math/Vec3d;)V", ordinal = 0))
+    @ModifyArg(method = "travelInFluid", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;updateVelocity(FLnet/minecraft/util/math/Vec3d;)V", ordinal = 0))
     public float KielsonsAPI$waterSpeed(float original) {
         EntityAttributeInstance waterSpeed = livingEntity.getAttributeInstance(KielsonsEntityAttributes.SWIMMING_SPEED);
         if (waterSpeed == null) {
@@ -86,7 +88,7 @@ abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @ModifyArg(method = "dropXp", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ExperienceOrbEntity;spawn(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/Vec3d;I)V"), index = 2)
+    @ModifyArg(method = "dropExperience", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ExperienceOrbEntity;spawn(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/Vec3d;I)V"), index = 2)
     protected int KielsonsAPI$modifyExperience(int originalXP) {
         if (this.attackingPlayer == null) {
             return originalXP;
@@ -112,6 +114,26 @@ abstract class LivingEntityMixin extends Entity {
                 waterSpeed.setBaseValue(-original);
             }
             return -waterSpeed.getValue();
+        }
+    }
+
+
+
+    @Inject(method = "getOffHandStack", at = @At("HEAD"), cancellable = true)
+    private void Kielson$getOffHandStack(CallbackInfoReturnable<ItemStack> cir) {
+        ItemStack mainHandStack = livingEntity.getEquippedStack(EquipmentSlot.MAINHAND);
+        Boolean mainHandStackComponent = mainHandStack.get(KielsonsAPIComponents.TWO_HANDED);
+        if (Boolean.TRUE.equals(mainHandStackComponent)) {
+            cir.setReturnValue(ItemStack.EMPTY);
+        }
+    }
+
+    @Inject(method = "getMainHandStack", at = @At("HEAD"), cancellable = true)
+    private void Kielson$getMainHandStack(CallbackInfoReturnable<ItemStack> cir) {
+        ItemStack offHandStack = livingEntity.getEquippedStack(EquipmentSlot.OFFHAND);
+        Boolean offHandStackComponent = offHandStack.get(KielsonsAPIComponents.TWO_HANDED);
+        if (Boolean.TRUE.equals(offHandStackComponent)) {
+            cir.setReturnValue(ItemStack.EMPTY);
         }
     }
 }

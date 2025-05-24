@@ -2,7 +2,7 @@ package com.kielson.mixin;
 
 import com.kielson.KielsonsEntityAttributes;
 import com.kielson.util.BowInterface;
-import com.kielson.util.RangedWeaponHelper;
+import com.kielson.util.ItemHelper;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -46,8 +46,8 @@ abstract class BowItemMixin extends RangedWeaponItem implements BowInterface {
     @Unique
     public float getCustomPullProgress(int useTicks, LivingEntity user, ItemStack itemStack) {
         float pullTime = (float) user.getAttributeValue(KielsonsEntityAttributes.PULL_TIME);
-        if (itemStack.getItem() instanceof BowItem && RangedWeaponHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).isPresent()){
-            pullTime -= 0.25f * RangedWeaponHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).get();
+        if (itemStack.getItem() instanceof BowInterface && ItemHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).isPresent()){
+            pullTime -= 0.25f * ItemHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).get();
         }
         pullTime *= 20.0f;
         float f = (float)useTicks / pullTime;
@@ -79,8 +79,8 @@ abstract class BowItemMixin extends RangedWeaponItem implements BowInterface {
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
             double damage = shooter.getAttributeValue(KielsonsEntityAttributes.RANGED_DAMAGE) / PROJECTILE_VELOCITY;
             ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
-            if (handStack.getItem() instanceof BowItem && RangedWeaponHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
-                damage += (int) ((damage * 0.25) * (RangedWeaponHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
+            if (handStack.getItem() instanceof BowItem && ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
+                damage += (int) ((damage * 0.25) * (ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
             }
             persistentProjectile.setDamage(damage);
         }

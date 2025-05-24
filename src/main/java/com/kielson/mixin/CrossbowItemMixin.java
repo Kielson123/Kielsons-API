@@ -2,7 +2,7 @@ package com.kielson.mixin;
 
 import com.kielson.KielsonsEntityAttributes;
 import com.kielson.util.CrossbowInterface;
-import com.kielson.util.RangedWeaponHelper;
+import com.kielson.util.ItemHelper;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -55,8 +55,8 @@ abstract class CrossbowItemMixin extends RangedWeaponItem implements CrossbowInt
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
             double damage = shooter.getAttributeValue(KielsonsEntityAttributes.RANGED_DAMAGE) / PROJECTILE_VELOCITY;
             ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
-            if (handStack.getItem() instanceof CrossbowItem && RangedWeaponHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
-                damage += (int) ((damage * 0.25) * (RangedWeaponHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
+            if (handStack.getItem() instanceof CrossbowItem && ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
+                damage += (int) ((damage * 0.25) * (ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
             }
             persistentProjectile.setDamage(damage);
         }

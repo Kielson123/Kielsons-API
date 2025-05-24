@@ -6,16 +6,22 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
-public class RangedWeaponHelper {
+public class ItemHelper {
 
     public static Optional<Integer> checkEnchantmentLevel(ItemStack itemStack, RegistryKey<Enchantment> enchantment){
         if (!itemStack.hasEnchantments()) return Optional.empty();
@@ -41,5 +47,15 @@ public class RangedWeaponHelper {
             }
         }
         return attributeValue > 0 ? Optional.of(attributeValue) : Optional.empty();
+    }
+
+    public static Item registerItem(String modId, String name, Function<Item.Settings, Item> itemFactory, Item.Settings settings) {
+        RegistryKey<Item> itemKey = RegistryKey.of(RegistryKeys.ITEM, Identifier.of(modId, name));
+
+        Item item = itemFactory.apply(settings.registryKey(itemKey));
+
+        Registry.register(Registries.ITEM, itemKey, item);
+
+        return item;
     }
 }
