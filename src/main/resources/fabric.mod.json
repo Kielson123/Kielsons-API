@@ -3,12 +3,12 @@
 	"id": "kielsonsapi",
 	"version": "0.7.1",
 	"name": "KielsonsAPI",
-	"description": "Common code for all of _Kielson's mods.",
+	"description": "Common code for all of Kielson's mods.",
 	"authors": [
 		"_Kielson"
 	],
 	"contact": {
-		"sources": "https://github.com/Kielson123/_Kielson-s-API"
+		"sources": "https://github.com/Kielson123/Kielsons-API"
 	},
 	"license": "GNU GPL-3.0",
 	"icon": "assets/kielsonsapi/icon.png",
