@@ -42,7 +42,6 @@ abstract class LivingEntityMixin extends Entity {
                 .add(KielsonsEntityAttributes.HEALING_MULTIPLIER)
                 .add(KielsonsEntityAttributes.MOB_DETECTION_RANGE)
                 .add(KielsonsEntityAttributes.RANGED_DAMAGE)
-                .add(KielsonsEntityAttributes.LUNG_CAPACITY)
                 .add(KielsonsEntityAttributes.SWIMMING_SPEED)
                 .add(KielsonsEntityAttributes.PULL_TIME);
     }

@@ -15,8 +15,6 @@ public class KielsonsEntityAttributes {
             new ClampedEntityAttribute("attribute.name.generic.healing_multiplier", 1, 0, 1024).setTracked(true));
     public static final RegistryEntry<EntityAttribute> EXPERIENCE = register("experience",
             new ClampedEntityAttribute("attribute.name.generic.experience", 1, 0,1024).setTracked(true));
-    public static final RegistryEntry<EntityAttribute> LUNG_CAPACITY = register("lung_capacity",
-            new ClampedEntityAttribute("attribute.name.generic.lung_capacity", 0, -2048, 2048).setTracked(true));
     public static final RegistryEntry<EntityAttribute> SWIMMING_SPEED = register("swimming_speed",
             new ClampedEntityAttribute("attribute.name.generic.swimming_speed", 0.5, 0, 1).setTracked(true));
     public static final RegistryEntry<EntityAttribute> MOB_DETECTION_RANGE = register("mob_detection_range",

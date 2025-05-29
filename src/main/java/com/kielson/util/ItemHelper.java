@@ -51,11 +51,12 @@ public class ItemHelper {
 
     public static Item registerItem(String modId, String name, Function<Item.Settings, Item> itemFactory, Item.Settings settings) {
         RegistryKey<Item> itemKey = RegistryKey.of(RegistryKeys.ITEM, Identifier.of(modId, name));
-
         Item item = itemFactory.apply(settings.registryKey(itemKey));
-
         Registry.register(Registries.ITEM, itemKey, item);
-
         return item;
+    }
+
+    public static Item registerItem(String modId, String name, Item.Settings settings) {
+        return registerItem(modId, name, Item::new, settings);
     }
 }

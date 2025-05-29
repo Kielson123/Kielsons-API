@@ -7,7 +7,6 @@
     "BlockMixin",
     "BowItemMixin",
     "CrossbowItemMixin",
-    "EntityMixin",
     "LivingEntityMixin",
     "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
