@@ -15,7 +15,7 @@ abstract class AbstractClientPlayerEntityMixin {
 
     @Redirect(method = "getFovMultiplier", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
     private boolean KielsonsAPI$getFovMultiplier(ItemStack instance, Item item){
-        return item instanceof BowInterface;
+        return item instanceof BowInterface && !(abstractClientPlayerEntity.isUsingSpyglass());
     }
 
     @ModifyConstant(method = "getFovMultiplier", constant = @Constant(floatValue = 20.0F))
