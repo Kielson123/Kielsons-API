@@ -1,6 +1,6 @@
 package com.kielson.item;
 
-import com.kielson.KielsonsEntityAttributes;
+import com.kielson.KielsonsAPIEntityAttributes;
 import com.kielson.util.BowInterface;
 import com.kielson.util.ItemHelper;
 import net.minecraft.component.type.AttributeModifierSlot;
@@ -8,7 +8,6 @@ import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -39,8 +38,8 @@ public class CustomBow extends RangedWeaponItem implements BowInterface {
 
     public CustomBow(double rangedDamage, double pullTime, double projectileVelocity, Settings settings) {
         super(settings.attributeModifiers(AttributeModifiersComponent.builder()
-                .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_bow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_bow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_bow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsAPIEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_bow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .build()));
 
         instances.add(this);
@@ -99,7 +98,7 @@ public class CustomBow extends RangedWeaponItem implements BowInterface {
     protected void shoot(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target) {
         projectile.setVelocity(shooter, shooter.getPitch(), shooter.getYaw() + yaw, 0.0f, speed, divergence);
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
-            double damage = shooter.getAttributeValue(KielsonsEntityAttributes.RANGED_DAMAGE) / projectileVelocity;
+            double damage = shooter.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_DAMAGE) / projectileVelocity;
             ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
             if (handStack.getItem() instanceof BowInterface && ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
                 damage += (int) ((damage * 0.25) * (ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
@@ -109,7 +108,7 @@ public class CustomBow extends RangedWeaponItem implements BowInterface {
     }
 
     public static float getPullProgress(int useTicks, LivingEntity user, ItemStack itemStack) {
-        float pullTime = (float) user.getAttributeValue(KielsonsEntityAttributes.PULL_TIME);
+        float pullTime = (float) user.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME);
         if (itemStack.getItem() instanceof BowInterface && ItemHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).isPresent()){
             pullTime -= 0.25f * ItemHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).get();
         }

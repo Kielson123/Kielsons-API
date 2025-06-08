@@ -1,15 +1,11 @@
 package com.kielson.mixin;
 
-import com.kielson.KielsonsAPI;
-import com.kielson.KielsonsAPIComponents;
-import com.kielson.KielsonsEntityAttributes;
+import com.kielson.KielsonsAPIEntityAttributes;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -34,14 +30,14 @@ abstract class PlayerEntityMixin extends LivingEntity{
     @Inject(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", require = 1, allow = 1, at = @At("RETURN"))
     private static void KielsonsAPI$addPlayerAttributes(final CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
         info.getReturnValue()
-                .add(KielsonsEntityAttributes.EXPERIENCE)
-                .add(KielsonsEntityAttributes.ITEM_PICK_UP_RANGE)
-                .add(KielsonsEntityAttributes.RANGED_ACCURACY);
+                .add(KielsonsAPIEntityAttributes.EXPERIENCE)
+                .add(KielsonsAPIEntityAttributes.ITEM_PICK_UP_RANGE)
+                .add(KielsonsAPIEntityAttributes.RANGED_ACCURACY);
     }
 
     @Inject(method = "addExperience", at = @At(value = "HEAD"))
     private void KielsonsAPI$changeExperience(int experience, CallbackInfo ci) {
-        experienceProgress = experienceProgress * (float) this.getAttributeValue(KielsonsEntityAttributes.EXPERIENCE);
+        experienceProgress = experienceProgress * (float) this.getAttributeValue(KielsonsAPIEntityAttributes.EXPERIENCE);
     }
 
     /**
@@ -49,7 +45,7 @@ abstract class PlayerEntityMixin extends LivingEntity{
      */
     @ModifyVariable(method = "tickMovement", at = @At("STORE"))
     private Box KielsonsAPI$adjustCollectionRange(Box original) {
-        EntityAttributeInstance instance = player.getAttributeInstance(KielsonsEntityAttributes.ITEM_PICK_UP_RANGE);
+        EntityAttributeInstance instance = player.getAttributeInstance(KielsonsAPIEntityAttributes.ITEM_PICK_UP_RANGE);
         if (instance != null) {
             double value = instance.getValue();
             if (original.getLengthX() + value < 0) {

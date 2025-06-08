@@ -1,6 +1,6 @@
 package com.kielson.mixin;
 
-import com.kielson.KielsonsEntityAttributes;
+import com.kielson.KielsonsAPIEntityAttributes;
 import com.kielson.util.BowInterface;
 import com.kielson.util.ItemHelper;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -38,14 +38,14 @@ abstract class BowItemMixin extends RangedWeaponItem implements BowInterface {
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/RangedWeaponItem;<init>(Lnet/minecraft/item/Item$Settings;)V"))
     private static Settings KielsonsAPI$addCustomAttributes(Settings settings){
         return settings.attributeModifiers(AttributeModifiersComponent.builder()
-                .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), PROJECTILE_DAMAGE, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), PULL_TIME, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), PROJECTILE_DAMAGE, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsAPIEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), PULL_TIME, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .build());
     }
 
     @Unique
     public float getCustomPullProgress(int useTicks, LivingEntity user, ItemStack itemStack) {
-        float pullTime = (float) user.getAttributeValue(KielsonsEntityAttributes.PULL_TIME);
+        float pullTime = (float) user.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME);
         if (itemStack.getItem() instanceof BowInterface && ItemHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).isPresent()){
             pullTime -= 0.25f * ItemHelper.checkEnchantmentLevel(itemStack, Enchantments.QUICK_CHARGE).get();
         }
@@ -77,7 +77,7 @@ abstract class BowItemMixin extends RangedWeaponItem implements BowInterface {
     @Inject(method = "shoot", at = @At(value = "RETURN"))
     private void KielsonsAPI$applyCustomDamage(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
-            double damage = shooter.getAttributeValue(KielsonsEntityAttributes.RANGED_DAMAGE) / PROJECTILE_VELOCITY;
+            double damage = shooter.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_DAMAGE) / PROJECTILE_VELOCITY;
             ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
             if (handStack.getItem() instanceof BowItem && ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
                 damage += (int) ((damage * 0.25) * (ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));

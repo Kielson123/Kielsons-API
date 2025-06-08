@@ -1,6 +1,6 @@
 package com.kielson.mixin;
 
-import com.kielson.KielsonsEntityAttributes;
+import com.kielson.KielsonsAPIEntityAttributes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -25,7 +25,7 @@ abstract class BlockMixin {
         if(breakingPlayer == null) {
             return originalXP;
         }
-        EntityAttributeInstance attributeInstance = breakingPlayer.getAttributeInstance(KielsonsEntityAttributes.EXPERIENCE);
+        EntityAttributeInstance attributeInstance = breakingPlayer.getAttributeInstance(KielsonsAPIEntityAttributes.EXPERIENCE);
         if (attributeInstance == null) {
             return originalXP;
         }

@@ -1,6 +1,6 @@
 package com.kielson.mixin;
 
-import com.kielson.KielsonsEntityAttributes;
+import com.kielson.KielsonsAPIEntityAttributes;
 import com.kielson.util.CrossbowInterface;
 import com.kielson.util.ItemHelper;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -40,20 +40,20 @@ abstract class CrossbowItemMixin extends RangedWeaponItem implements CrossbowInt
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/RangedWeaponItem;<init>(Lnet/minecraft/item/Item$Settings;)V"))
     private static Settings KielsonsAPI$addCustomAttributes(Settings settings){
         return settings.attributeModifiers(AttributeModifiersComponent.builder()
-                .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "crossbow"), PROJECTILE_DAMAGE, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "crossbow"), PULL_TIME, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "crossbow"), PROJECTILE_DAMAGE, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsAPIEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "crossbow"), PULL_TIME, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .build());
     }
 
     @ModifyArg(method = "getPullTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/enchantment/EnchantmentHelper;getCrossbowChargeTime(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;F)F"), index = 2)
     private static float KielsonsAPI$applyCustomPullTime(float baseCrossbowChargeTime, @Local(argsOnly = true) LivingEntity user) {
-        return (float) user.getAttributeValue(KielsonsEntityAttributes.PULL_TIME);
+        return (float) user.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME);
     }
 
     @Inject(method = "shoot", at = @At(value = "RETURN"))
     private void KielsonsAPI$applyCustomDamage(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
-            double damage = shooter.getAttributeValue(KielsonsEntityAttributes.RANGED_DAMAGE) / PROJECTILE_VELOCITY;
+            double damage = shooter.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_DAMAGE) / PROJECTILE_VELOCITY;
             ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
             if (handStack.getItem() instanceof CrossbowItem && ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
                 damage += (int) ((damage * 0.25) * (ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));

@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.LivingEntity;
 
-public class KielsonsEvents {
+public class KielsonsAPIEvents {
     public static final Event<Healed> ON_HEAL = EventFactory.createArrayBacked(Healed.class, callbacks -> (livingEntity, original) -> {
         float previous = original;
 

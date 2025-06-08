@@ -1,6 +1,6 @@
 package com.kielson.mixin;
 
-import com.kielson.KielsonsEntityAttributes;
+import com.kielson.KielsonsAPIEntityAttributes;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -22,7 +22,7 @@ abstract class TargetPredicateMixin {
         if (targetEntity == null) {
             return e;
         }
-        EntityAttributeInstance instance = targetEntity.getAttributeInstance(KielsonsEntityAttributes.MOB_DETECTION_RANGE);
+        EntityAttributeInstance instance = targetEntity.getAttributeInstance(KielsonsAPIEntityAttributes.MOB_DETECTION_RANGE);
         if (instance == null) {
             return e;
         }

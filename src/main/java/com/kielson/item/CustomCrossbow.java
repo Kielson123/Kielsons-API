@@ -1,6 +1,6 @@
 package com.kielson.item;
 
-import com.kielson.KielsonsEntityAttributes;
+import com.kielson.KielsonsAPIEntityAttributes;
 import com.kielson.util.CrossbowInterface;
 import com.kielson.util.ItemHelper;
 import com.mojang.serialization.Codec;
@@ -54,8 +54,8 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
 
     public CustomCrossbow(double rangedDamage, double pullTime, double projectileVelocity, Settings settings) {
         super(settings.attributeModifiers(AttributeModifiersComponent.builder()
-                .add(KielsonsEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_crossbow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .add(KielsonsEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_crossbow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_crossbow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+                .add(KielsonsAPIEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_crossbow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .build()));
 
         instances.add(this);
@@ -131,7 +131,7 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
         }
         projectile.setVelocity(vector3f.x(), vector3f.y(), vector3f.z(), speed, divergence);
         if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
-            double damage = shooter.getAttributeValue(KielsonsEntityAttributes.RANGED_DAMAGE) / projectileVelocity;
+            double damage = shooter.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_DAMAGE) / projectileVelocity;
             ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
             if (handStack.getItem() instanceof CrossbowInterface && ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
                 damage += (int) ((damage * 0.25) * (ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
@@ -219,7 +219,7 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
     }
 
     public static int getPullTime(ItemStack stack, LivingEntity user) {
-        float f = EnchantmentHelper.getCrossbowChargeTime(stack, user, (float) user.getAttributeValue(KielsonsEntityAttributes.PULL_TIME));
+        float f = EnchantmentHelper.getCrossbowChargeTime(stack, user, (float) user.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME));
         return MathHelper.floor(f * 20.0f);
     }
 

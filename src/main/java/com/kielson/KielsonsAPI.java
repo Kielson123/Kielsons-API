@@ -1,6 +1,6 @@
 package com.kielson;
 
-import com.kielson.events.KielsonsEvents;
+import com.kielson.events.KielsonsAPIEvents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
@@ -14,12 +14,12 @@ public class KielsonsAPI implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		KielsonsEntityAttributes.initialize();
+		KielsonsAPIEntityAttributes.initialize();
 		KielsonsAPIComponents.initialize();
 
-		KielsonsEvents.ON_HEAL.register((livingEntity, original) -> {
-			if(original == 0f || livingEntity.getAttributeInstance(KielsonsEntityAttributes.HEALING_MULTIPLIER) == null) return original;
-			return (float) (original * livingEntity.getAttributeValue(KielsonsEntityAttributes.HEALING_MULTIPLIER));
+		KielsonsAPIEvents.ON_HEAL.register((livingEntity, original) -> {
+			if(original == 0f || livingEntity.getAttributeInstance(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER) == null) return original;
+			return (float) (original * livingEntity.getAttributeValue(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER));
 		});
 	}
 

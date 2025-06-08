@@ -1,7 +1,6 @@
 package com.kielson.mixin.client;
 
-import com.kielson.KielsonsEntityAttributes;
-import com.kielson.item.CustomBow;
+import com.kielson.KielsonsAPIEntityAttributes;
 import com.kielson.util.BowInterface;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.item.*;
@@ -20,6 +19,6 @@ abstract class AbstractClientPlayerEntityMixin {
 
     @ModifyConstant(method = "getFovMultiplier", constant = @Constant(floatValue = 20.0F))
     private float KielsonsAPI$getFovMultiplierForPullTime(float value) {
-        return Math.clamp((float) (abstractClientPlayerEntity.getAttributeValue(KielsonsEntityAttributes.PULL_TIME) * 20.0), 0.01f, Float.MAX_VALUE);
+        return Math.clamp((float) (abstractClientPlayerEntity.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME) * 20.0), 0.01f, Float.MAX_VALUE);
     }
 }

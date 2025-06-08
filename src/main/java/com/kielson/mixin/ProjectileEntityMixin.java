@@ -1,6 +1,6 @@
 package com.kielson.mixin;
 
-import com.kielson.KielsonsEntityAttributes;
+import com.kielson.KielsonsAPIEntityAttributes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -17,8 +17,8 @@ abstract class ProjectileEntityMixin{
         final int ARG = 4;
         Entity owner = ((ProjectileEntity) (Object) this).getOwner();
         float uncertainty = args.get(ARG);
-        if (owner instanceof LivingEntity livingEntity && livingEntity.getAttributeInstance(KielsonsEntityAttributes.RANGED_ACCURACY) != null) {
-            args.set(ARG, Math.max(0.0f, (float) (uncertainty - (0.1f * livingEntity.getAttributeValue(KielsonsEntityAttributes.RANGED_ACCURACY)))));
+        if (owner instanceof LivingEntity livingEntity && livingEntity.getAttributeInstance(KielsonsAPIEntityAttributes.RANGED_ACCURACY) != null) {
+            args.set(ARG, Math.max(0.0f, (float) (uncertainty - (0.1f * livingEntity.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_ACCURACY)))));
         }
     }
 }

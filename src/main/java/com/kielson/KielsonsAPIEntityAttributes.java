@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 import static com.kielson.KielsonsAPI.MOD_ID;
 
-public class KielsonsEntityAttributes {
+public class KielsonsAPIEntityAttributes {
 
     public static final RegistryEntry<EntityAttribute> HEALING_MULTIPLIER = register("healing_multiplier",
             new ClampedEntityAttribute("attribute.name.generic.healing_multiplier", 1, 0, 1024).setTracked(true));
