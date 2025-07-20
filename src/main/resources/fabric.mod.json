@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "kielsonsapi",
-	"version": "0.7.3",
+	"version": "0.7.5",
 	"name": "KielsonsAPI",
 	"description": "Common code for all of Kielson's mods.",
 	"authors": [
@@ -25,10 +25,10 @@
 		"kielsonsapi.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.15.11",
-		"minecraft": ">=1.21.5",
+		"fabricloader": ">=0.16.0",
+		"minecraft": ">=1.21.6",
 		"java": ">=21",
-		"fabric-api": ">=0.124.2"
+		"fabric-api": ">=0.129.0+1.21.6"
 	},
 	"accessWidener" : "kielsonsapi.accesswidener"
 }
