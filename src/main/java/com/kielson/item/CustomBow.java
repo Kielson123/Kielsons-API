@@ -40,7 +40,8 @@ public class CustomBow extends RangedWeaponItem implements BowInterface {
         super(settings.attributeModifiers(AttributeModifiersComponent.builder()
                 .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_bow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .add(KielsonsAPIEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_bow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .build()));
+                .build())
+                .enchantable(1));
 
         instances.add(this);
         this.projectileVelocity = projectileVelocity;

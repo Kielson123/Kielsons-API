@@ -56,7 +56,8 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
         super(settings.attributeModifiers(AttributeModifiersComponent.builder()
                 .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_crossbow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
                 .add(KielsonsAPIEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_crossbow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .build()));
+                .build())
+                .enchantable(1));
 
         instances.add(this);
         this.projectileVelocity = projectileVelocity;
