@@ -6,15 +6,18 @@ import com.kielson.events.KielsonsAPIEvents;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.*;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.world.World;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,17 +29,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin extends Entity {
     @Unique private final LivingEntity livingEntity = (LivingEntity) (Object) this;
-    @Unique private final PlayerEntity attackingPlayer = livingEntity.getAttackingPlayer();
+    @Unique private final Player attackingPlayer = livingEntity.getLastHurtByPlayer();
 
-    public LivingEntityMixin(EntityType<?> type, World world) {
+    public LivingEntityMixin(EntityType<?> type, Level world) {
         super(type, world);
     }
 
-    @Inject(method = "createLivingAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", require = 1, allow = 1, at = @At("RETURN"))
-    private static void KielsonsAPI$addAttributes(final CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
+    @Inject(method = "createLivingAttributes()Lnet/minecraft/world/entity/ai/attributes/AttributeSupplier$Builder;", require = 1, allow = 1, at = @At("RETURN"))
+    private static void KielsonsAPI$addAttributes(final CallbackInfoReturnable<AttributeSupplier.Builder> info) {
         info.getReturnValue()
                 .add(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER)
-                .add(KielsonsAPIEntityAttributes.MOB_DETECTION_RANGE)
                 .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE)
                 .add(KielsonsAPIEntityAttributes.SWIMMING_SPEED)
                 .add(KielsonsAPIEntityAttributes.PULL_TIME);
@@ -47,85 +49,30 @@ abstract class LivingEntityMixin extends Entity {
         return KielsonsAPIEvents.ON_HEAL.invoker().onHeal(livingEntity, amount);
     }
 
-    /**
-     * @author DaFuqs
-     */
-    @ModifyArg(method = "travelInFluid", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;updateVelocity(FLnet/minecraft/util/math/Vec3d;)V", ordinal = 0))
-    public float KielsonsAPI$waterSpeed(float original) {
-        EntityAttributeInstance waterSpeed = livingEntity.getAttributeInstance(KielsonsAPIEntityAttributes.SWIMMING_SPEED);
-        if (waterSpeed == null) {
-            return original;
-        } else {
-            if (waterSpeed.getBaseValue() != original) {
-                waterSpeed.setBaseValue(original);
-            }
-            return (float) waterSpeed.getValue();
-        }
-    }
-
-    /**
-     * @author DaFuqs
-     */
-    @ModifyExpressionValue(method = "swimUpward", at = @At(value = "CONSTANT", args = "doubleValue=0.03999999910593033D"))
-    public double KielsonsAPI$modifyUpwardSwimming(double original, TagKey<Fluid> fluid) {
-        if (fluid == FluidTags.WATER) {
-            EntityAttributeInstance waterSpeed = livingEntity.getAttributeInstance(KielsonsAPIEntityAttributes.SWIMMING_SPEED);
-            if (waterSpeed == null) {
-                return original;
-            } else {
-                if (waterSpeed.getBaseValue() != original) {
-                    waterSpeed.setBaseValue(original);
-                }
-                return waterSpeed.getValue();
-            }
-        } else {
-            return original;
-        }
-    }
-
-    @ModifyArg(method = "dropExperience", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ExperienceOrbEntity;spawn(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/Vec3d;I)V"), index = 2)
+    @ModifyArg(method = "dropExperience", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"), index = 2)
     protected int KielsonsAPI$modifyExperience(int originalXP) {
         if (this.attackingPlayer == null) {
             return originalXP;
         }
-        EntityAttributeInstance attributeInstance = attackingPlayer.getAttributeInstance(KielsonsAPIEntityAttributes.EXPERIENCE);
+        AttributeInstance attributeInstance = attackingPlayer.getAttribute(KielsonsAPIEntityAttributes.EXPERIENCE);
         if (attributeInstance == null) {
             return originalXP;
         }
         return(int) (originalXP * attributeInstance.getValue());
     }
 
-    /**
-     * @author DaFuqs
-     */
-    @Environment(EnvType.CLIENT)
-    @ModifyExpressionValue(method = "knockDownwards", at = @At(value = "CONSTANT", args = "doubleValue=-0.03999999910593033D"))
-    public double KielsonsAPI$knockDownwards(double original) {
-        EntityAttributeInstance waterSpeed = livingEntity.getAttributeInstance(KielsonsAPIEntityAttributes.SWIMMING_SPEED);
-        if (waterSpeed == null) {
-            return original;
-        } else {
-            if (waterSpeed.getBaseValue() != -original) {
-                waterSpeed.setBaseValue(-original);
-            }
-            return -waterSpeed.getValue();
-        }
-    }
-
-
-
-    @Inject(method = "getOffHandStack", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getOffhandItem", at = @At("HEAD"), cancellable = true)
     private void Kielson$getOffHandStack(CallbackInfoReturnable<ItemStack> cir) {
-        ItemStack mainHandStack = livingEntity.getEquippedStack(EquipmentSlot.MAINHAND);
+        ItemStack mainHandStack = livingEntity.getItemBySlot(EquipmentSlot.MAINHAND);
         Boolean mainHandStackComponent = mainHandStack.get(KielsonsAPIComponents.TWO_HANDED);
         if (Boolean.TRUE.equals(mainHandStackComponent)) {
             cir.setReturnValue(ItemStack.EMPTY);
         }
     }
 
-    @Inject(method = "getMainHandStack", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getMainHandItem", at = @At("HEAD"), cancellable = true)
     private void Kielson$getMainHandStack(CallbackInfoReturnable<ItemStack> cir) {
-        ItemStack offHandStack = livingEntity.getEquippedStack(EquipmentSlot.OFFHAND);
+        ItemStack offHandStack = livingEntity.getItemBySlot(EquipmentSlot.OFFHAND);
         Boolean offHandStackComponent = offHandStack.get(KielsonsAPIComponents.TWO_HANDED);
         if (Boolean.TRUE.equals(offHandStackComponent)) {
             cir.setReturnValue(ItemStack.EMPTY);

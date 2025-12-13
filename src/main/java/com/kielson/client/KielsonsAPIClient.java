@@ -3,12 +3,11 @@ package com.kielson.client;
 import com.kielson.util.TooltipHelper;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextContent;
-import net.minecraft.text.TranslatableTextContent;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.world.item.ItemStack;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,20 +23,20 @@ public class KielsonsAPIClient implements ClientModInitializer {
         });
     }
 
-    private void addTwoHandedTooltip(ItemStack stack, List<Text> lines){
+    private void addTwoHandedTooltip(ItemStack stack, List<Component> lines){
         if (Boolean.TRUE.equals(stack.get(TWO_HANDED))) {
             Optional<Integer> goodValue = Optional.empty();
             for (int i = 0; i < lines.size(); ++i) {
-                Text line = lines.get(i);
-                TextContent content = line.getContent();
-                if (content instanceof TranslatableTextContent translatable) {
+                Component line = lines.get(i);
+                ComponentContents content = line.getContents();
+                if (content instanceof TranslatableContents translatable) {
                     if (translatable.getKey().startsWith("item.modifiers") || translatable.getKey().startsWith("potion.whenDrank")) {
                         goodValue = Optional.of(i);
                         break;
                     }
                 }
             }
-            Text text = Text.empty().append(Text.translatable("item.modifiers.two_handed").formatted(Formatting.GRAY));
+            Component text = Component.empty().append(Component.translatable("item.modifiers.two_handed").withStyle(ChatFormatting.GRAY));
             if (goodValue.isEmpty()) lines.addLast(text);
             else lines.add(goodValue.get(), text);
         }

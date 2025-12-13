@@ -3,43 +3,43 @@ package com.kielson.item;
 import com.kielson.KielsonsAPIEntityAttributes;
 import com.kielson.util.BowInterface;
 import com.kielson.util.ItemHelper;
-import net.minecraft.component.type.AttributeModifierSlot;
-import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.item.consume.UseAction;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 
 import static com.kielson.KielsonsAPI.MOD_ID;
 
-public class CustomBow extends RangedWeaponItem implements BowInterface {
+public class CustomBow extends ProjectileWeaponItem implements BowInterface {
     private final double projectileVelocity;
     private final double pullTime;
 
     public final static HashSet<CustomBow> instances = new HashSet<>();
 
-    public CustomBow(double rangedDamage, double pullTime, double projectileVelocity, Settings settings) {
-        super(settings.attributeModifiers(AttributeModifiersComponent.builder()
-                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_bow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .add(KielsonsAPIEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_bow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+    public CustomBow(double rangedDamage, double pullTime, double projectileVelocity, Properties settings) {
+        super(settings.attributes(ItemAttributeModifiers.builder()
+                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "custom_bow"), rangedDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
+                .add(KielsonsAPIEntityAttributes.PULL_TIME, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "custom_bow"), pullTime, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
                 .build())
                 .enchantable(1));
 
@@ -49,23 +49,23 @@ public class CustomBow extends RangedWeaponItem implements BowInterface {
     }
 
     @Override
-    public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (!(user instanceof PlayerEntity playerEntity)) {
+    public boolean releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+        if (!(user instanceof Player playerEntity)) {
             return false;
         } else {
-            ItemStack itemStack = playerEntity.getProjectileType(stack);
+            ItemStack itemStack = playerEntity.getProjectile(stack);
             if (itemStack.isEmpty()) {
                 return false;
             } else {
-                int useTicks = this.getMaxUseTime(stack, user) - remainingUseTicks;
+                int useTicks = this.getUseDuration(stack, user) - remainingUseTicks;
                 float f = getPullProgress(useTicks, user, itemStack);
                 if (f < 0.1) {
                     return false;
                 } else {
-                    List<ItemStack> list = load(stack, itemStack, playerEntity);
-                    if (world instanceof ServerWorld serverWorld && !list.isEmpty()) {
+                    List<ItemStack> list = draw(stack, itemStack, playerEntity);
+                    if (world instanceof ServerLevel serverWorld && !list.isEmpty()) {
                         float speed = (float) (getPullProgress(useTicks, user, itemStack) * projectileVelocity);
-                        shootAll(serverWorld, playerEntity, playerEntity.getActiveHand(), stack, list, speed, 1.0F, f == 1.0F, null);
+                        shoot(serverWorld, playerEntity, playerEntity.getUsedItemHand(), stack, list, speed, 1.0F, f == 1.0F, null);
                     }
 
                     world.playSound(
@@ -73,12 +73,12 @@ public class CustomBow extends RangedWeaponItem implements BowInterface {
                             playerEntity.getX(),
                             playerEntity.getY(),
                             playerEntity.getZ(),
-                            SoundEvents.ENTITY_ARROW_SHOOT,
-                            SoundCategory.PLAYERS,
+                            SoundEvents.ARROW_SHOOT,
+                            SoundSource.PLAYERS,
                             1.0F,
                             1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F
                     );
-                    playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+                    playerEntity.awardStat(Stats.ITEM_USED.get(this));
                     return true;
                 }
             }
@@ -86,25 +86,25 @@ public class CustomBow extends RangedWeaponItem implements BowInterface {
     }
 
     @Override
-    public Predicate<ItemStack> getProjectiles() {
-        return BOW_PROJECTILES;
+    public Predicate<ItemStack> getAllSupportedProjectiles() {
+        return ARROW_ONLY;
     }
 
     @Override
-    public int getRange() {
+    public int getDefaultProjectileRange() {
         return 15;
     }
 
     @Override
-    protected void shoot(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target) {
-        projectile.setVelocity(shooter, shooter.getPitch(), shooter.getYaw() + yaw, 0.0f, speed, divergence);
-        if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
+    protected void shootProjectile(LivingEntity shooter, Projectile projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target) {
+        projectile.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot() + yaw, 0.0f, speed, divergence);
+        if (projectile instanceof AbstractArrow persistentProjectile) {
             double damage = shooter.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_DAMAGE) / projectileVelocity;
-            ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
+            ItemStack handStack = shooter.getItemInHand(shooter.getUsedItemHand());
             if (handStack.getItem() instanceof BowInterface && ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
                 damage += (int) ((damage * 0.25) * (ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
             }
-            persistentProjectile.setDamage(damage);
+            persistentProjectile.setBaseDamage(damage);
         }
     }
 
@@ -123,24 +123,24 @@ public class CustomBow extends RangedWeaponItem implements BowInterface {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getUseDuration(ItemStack stack, LivingEntity user) {
         return (int) (72000 * pullTime);
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.BOW;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.BOW;
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
-        boolean bl = !user.getProjectileType(itemStack).isEmpty();
-        if (!user.isInCreativeMode() && !bl) {
-            return ActionResult.FAIL;
+    public InteractionResult use(Level world, Player user, InteractionHand hand) {
+        ItemStack itemStack = user.getItemInHand(hand);
+        boolean bl = !user.getProjectile(itemStack).isEmpty();
+        if (!user.hasInfiniteMaterials() && !bl) {
+            return InteractionResult.FAIL;
         } else {
-            user.setCurrentHand(hand);
-            return ActionResult.CONSUME;
+            user.startUsingItem(hand);
+            return InteractionResult.CONSUME;
         }
     }
 

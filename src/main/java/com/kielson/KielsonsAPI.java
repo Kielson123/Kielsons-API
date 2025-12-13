@@ -14,11 +14,12 @@ public class KielsonsAPI implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		System.out.println("MOD ZAŁADOWANY");
 		KielsonsAPIEntityAttributes.initialize();
 		KielsonsAPIComponents.initialize();
 
 		KielsonsAPIEvents.ON_HEAL.register((livingEntity, original) -> {
-			if(original == 0f || livingEntity.getAttributeInstance(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER) == null) return original;
+			if(original == 0f || livingEntity.getAttribute(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER) == null) return original;
 			return (float) (original * livingEntity.getAttributeValue(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER));
 		});
 	}

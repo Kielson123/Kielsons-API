@@ -1,14 +1,14 @@
 package com.kielson.mixin;
 
 import com.kielson.KielsonsAPIEntityAttributes;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,24 +18,23 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(PlayerEntity.class)
+@Mixin(Player.class)
 abstract class PlayerEntityMixin extends LivingEntity{
-    @Unique private final PlayerEntity player = (PlayerEntity) (Object)this;
+    @Unique private final Player player = (Player) (Object)this;
     @Shadow public float experienceProgress;
 
-    protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
+    protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level world) {
         super(entityType, world);
     }
 
-    @Inject(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", require = 1, allow = 1, at = @At("RETURN"))
-    private static void KielsonsAPI$addPlayerAttributes(final CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
+    @Inject(method = "createAttributes()Lnet/minecraft/world/entity/ai/attributes/AttributeSupplier$Builder;", require = 1, allow = 1, at = @At("RETURN"))
+    private static void KielsonsAPI$addPlayerAttributes(final CallbackInfoReturnable<AttributeSupplier.Builder> info) {
         info.getReturnValue()
                 .add(KielsonsAPIEntityAttributes.EXPERIENCE)
-                .add(KielsonsAPIEntityAttributes.ITEM_PICK_UP_RANGE)
-                .add(KielsonsAPIEntityAttributes.RANGED_ACCURACY);
+                .add(KielsonsAPIEntityAttributes.ITEM_PICK_UP_RANGE);
     }
 
-    @Inject(method = "addExperience", at = @At(value = "HEAD"))
+    @Inject(method = "giveExperiencePoints", at = @At(value = "HEAD"))
     private void KielsonsAPI$changeExperience(int experience, CallbackInfo ci) {
         experienceProgress = experienceProgress * (float) this.getAttributeValue(KielsonsAPIEntityAttributes.EXPERIENCE);
     }
@@ -43,16 +42,16 @@ abstract class PlayerEntityMixin extends LivingEntity{
     /**
      * @author DaFuqs
      */
-    @ModifyVariable(method = "tickMovement", at = @At("STORE"))
-    private Box KielsonsAPI$adjustCollectionRange(Box original) {
-        EntityAttributeInstance instance = player.getAttributeInstance(KielsonsAPIEntityAttributes.ITEM_PICK_UP_RANGE);
+    @ModifyVariable(method = "aiStep", at = @At("STORE"))
+    private AABB KielsonsAPI$adjustCollectionRange(AABB original) {
+        AttributeInstance instance = player.getAttribute(KielsonsAPIEntityAttributes.ITEM_PICK_UP_RANGE);
         if (instance != null) {
             double value = instance.getValue();
-            if (original.getLengthX() + value < 0) {
-                Vec3d center = original.getCenter();
-                return new Box(center.x, center.y, center.z, center.x, center.y, center.z);
+            if (original.getXsize() + value < 0) {
+                Vec3 center = original.getCenter();
+                return new AABB(center.x, center.y, center.z, center.x, center.y, center.z);
             }
-            return original.expand(value, value / 2, value);
+            return original.inflate(value, value / 2, value);
         }
         return original;
     }

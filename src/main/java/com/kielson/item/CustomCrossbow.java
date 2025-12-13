@@ -4,32 +4,38 @@ import com.kielson.KielsonsAPIEntityAttributes;
 import com.kielson.util.CrossbowInterface;
 import com.kielson.util.ItemHelper;
 import com.mojang.serialization.Codec;
-import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.component.type.AttributeModifierSlot;
-import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.component.type.ChargedProjectilesComponent;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.FireworkRocketEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.*;
-import net.minecraft.item.consume.UseAction;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.item.component.ChargedProjectiles;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -41,21 +47,21 @@ import java.util.function.Predicate;
 
 import static com.kielson.KielsonsAPI.MOD_ID;
 
-public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterface {
+public class CustomCrossbow extends ProjectileWeaponItem implements CrossbowInterface {
     private boolean charged = false;
     private boolean loaded = false;
-    private static final CrossbowItem.LoadingSounds DEFAULT_LOADING_SOUNDS = new CrossbowItem.LoadingSounds(
-            Optional.of(SoundEvents.ITEM_CROSSBOW_LOADING_START),
-            Optional.of(SoundEvents.ITEM_CROSSBOW_LOADING_MIDDLE),
-            Optional.of(SoundEvents.ITEM_CROSSBOW_LOADING_END)
+    private static final CrossbowItem.ChargingSounds DEFAULT_LOADING_SOUNDS = new CrossbowItem.ChargingSounds(
+            Optional.of(SoundEvents.CROSSBOW_LOADING_START),
+            Optional.of(SoundEvents.CROSSBOW_LOADING_MIDDLE),
+            Optional.of(SoundEvents.CROSSBOW_LOADING_END)
     );
     private final double projectileVelocity;
     public final static HashSet<CustomCrossbow> instances = new HashSet<>();
 
-    public CustomCrossbow(double rangedDamage, double pullTime, double projectileVelocity, Settings settings) {
-        super(settings.attributeModifiers(AttributeModifiersComponent.builder()
-                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_crossbow"), rangedDamage, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .add(KielsonsAPIEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "custom_crossbow"), pullTime, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+    public CustomCrossbow(double rangedDamage, double pullTime, double projectileVelocity, Properties settings) {
+        super(settings.attributes(ItemAttributeModifiers.builder()
+                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "custom_crossbow"), rangedDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
+                .add(KielsonsAPIEntityAttributes.PULL_TIME, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "custom_crossbow"), pullTime, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
                 .build())
                 .enchantable(1));
 
@@ -64,46 +70,46 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
     }
 
     @Override
-    public Predicate<ItemStack> getHeldProjectiles() {
-        return CROSSBOW_HELD_PROJECTILES;
+    public @NotNull Predicate<ItemStack> getSupportedHeldProjectiles() {
+        return ARROW_OR_FIREWORK;
     }
 
     @Override
-    public Predicate<ItemStack> getProjectiles() {
-        return BOW_PROJECTILES;
+    public @NotNull Predicate<ItemStack> getAllSupportedProjectiles() {
+        return ARROW_ONLY;
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
-        ChargedProjectilesComponent chargedProjectilesComponent = itemStack.get(DataComponentTypes.CHARGED_PROJECTILES);
+    public InteractionResult use(Level world, Player user, InteractionHand hand) {
+        ItemStack itemStack = user.getItemInHand(hand);
+        ChargedProjectiles chargedProjectilesComponent = itemStack.get(DataComponents.CHARGED_PROJECTILES);
         if (chargedProjectilesComponent != null && !chargedProjectilesComponent.isEmpty()) {
             this.shootAll(world, user, hand, itemStack, getSpeed(chargedProjectilesComponent), 1.0F, null);
-            return ActionResult.CONSUME;
-        } else if (!user.getProjectileType(itemStack).isEmpty()) {
+            return InteractionResult.CONSUME;
+        } else if (!user.getProjectile(itemStack).isEmpty()) {
             this.charged = false;
             this.loaded = false;
-            user.setCurrentHand(hand);
-            return ActionResult.CONSUME;
+            user.startUsingItem(hand);
+            return InteractionResult.CONSUME;
         } else {
-            return ActionResult.FAIL;
+            return InteractionResult.FAIL;
         }
     }
 
-    private float getSpeed(ChargedProjectilesComponent stack) {
+    private float getSpeed(ChargedProjectiles stack) {
         return stack.contains(Items.FIREWORK_ROCKET) ? (float) (projectileVelocity / 1.96875) : (float) projectileVelocity;
     }
 
     @Override
-    public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        int useTicks = this.getMaxUseTime(stack, user) - remainingUseTicks;
+    public boolean releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+        int useTicks = this.getUseDuration(stack, user) - remainingUseTicks;
         return getPullProgress(useTicks, stack, user) >= 1.0F && isCharged(stack);
     }
 
     private static boolean loadProjectiles(LivingEntity shooter, ItemStack crossbow) {
-        List<ItemStack> list = load(crossbow, shooter.getProjectileType(crossbow), shooter);
+        List<ItemStack> list = draw(crossbow, shooter.getProjectile(crossbow), shooter);
         if (!list.isEmpty()) {
-            crossbow.set(DataComponentTypes.CHARGED_PROJECTILES, ChargedProjectilesComponent.of(list));
+            crossbow.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(list));
             return true;
         } else {
             return false;
@@ -111,74 +117,73 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
     }
 
     public static boolean isCharged(ItemStack stack) {
-        ChargedProjectilesComponent chargedProjectilesComponent = stack.getOrDefault(DataComponentTypes.CHARGED_PROJECTILES, ChargedProjectilesComponent.DEFAULT);
+        ChargedProjectiles chargedProjectilesComponent = stack.getOrDefault(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
         return !chargedProjectilesComponent.isEmpty();
     }
 
     @Override
-    protected void shoot(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target) {
+    protected void shootProjectile(LivingEntity shooter, Projectile projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target) {
         Vector3f vector3f;
         if (target != null) {
             double d = target.getX() - shooter.getX();
             double e = target.getZ() - shooter.getZ();
             double f = Math.sqrt(d * d + e * e);
-            double g = target.getBodyY(0.3333333333333333) - projectile.getY() + f * 0.2F;
-            vector3f = CrossbowItem.calcVelocity(shooter, new Vec3d(d, g, e), yaw);
+            double g = target.getY(0.3333333333333333) - projectile.getY() + f * 0.2F;
+            vector3f = CrossbowItem.getProjectileShotVector(shooter, new Vec3(d, g, e), yaw);
         } else {
-            Vec3d vec3d = shooter.getOppositeRotationVector(1.0F);
+            Vec3 vec3d = shooter.getUpVector(1.0F);
             Quaternionf quaternionf = new Quaternionf().setAngleAxis((double)(yaw * (float) (Math.PI / 180.0)), vec3d.x, vec3d.y, vec3d.z);
-            Vec3d vec3d2 = shooter.getRotationVec(1.0f);
+            Vec3 vec3d2 = shooter.getViewVector(1.0f);
             vector3f = vec3d2.toVector3f().rotate(quaternionf);
         }
-        projectile.setVelocity(vector3f.x(), vector3f.y(), vector3f.z(), speed, divergence);
-        if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
+        projectile.shoot(vector3f.x(), vector3f.y(), vector3f.z(), speed, divergence);
+        if (projectile instanceof AbstractArrow persistentProjectile) {
             double damage = shooter.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_DAMAGE) / projectileVelocity;
-            ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
+            ItemStack handStack = shooter.getItemInHand(shooter.getUsedItemHand());
             if (handStack.getItem() instanceof CrossbowInterface && ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
                 damage += (int) ((damage * 0.25) * (ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
             }
-            persistentProjectile.setDamage(damage);
+            persistentProjectile.setBaseDamage(damage);
         }
-        float soundPitch = CrossbowItem.getSoundPitch(shooter.getRandom(), index);
-        shooter.getWorld().playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, shooter.getSoundCategory(), 1.0f, soundPitch);
+        shooter.playSound(SoundEvents.CROSSBOW_SHOOT);
     }
 
     @Override
-    protected ProjectileEntity createArrowEntity(World world, LivingEntity shooter, ItemStack weaponStack, ItemStack projectileStack, boolean critical) {
-        if (projectileStack.isOf(Items.FIREWORK_ROCKET)) {
+    protected Projectile createProjectile(Level world, LivingEntity shooter, ItemStack weaponStack, ItemStack projectileStack, boolean critical) {
+        if (projectileStack.is(Items.FIREWORK_ROCKET)) {
             return new FireworkRocketEntity(world, projectileStack, shooter, shooter.getX(), shooter.getEyeY() - 0.15F, shooter.getZ(), true);
         } else {
-            ProjectileEntity projectileEntity = super.createArrowEntity(world, shooter, weaponStack, projectileStack, critical);
-            if (projectileEntity instanceof PersistentProjectileEntity persistentProjectileEntity) {
-                persistentProjectileEntity.setSound(SoundEvents.ITEM_CROSSBOW_HIT);
+            Projectile projectileEntity = super.createProjectile(world, shooter, weaponStack, projectileStack, critical);
+            if (projectileEntity instanceof AbstractArrow persistentProjectileEntity) {
+                persistentProjectileEntity.setSoundEvent(SoundEvents.CROSSBOW_HIT);
             }
             return projectileEntity;
         }
     }
 
     @Override
-    protected int getWeaponStackDamage(ItemStack projectile) {
-        return projectile.isOf(Items.FIREWORK_ROCKET) ? 3 : 1;
+    protected int getDurabilityUse(ItemStack projectile) {
+        return projectile.is(Items.FIREWORK_ROCKET) ? 3 : 1;
     }
 
-    public void shootAll(World world, LivingEntity shooter, Hand hand, ItemStack stack, float speed, float divergence, @Nullable LivingEntity target) {
-        if (world instanceof ServerWorld serverWorld) {
-            ChargedProjectilesComponent chargedProjectilesComponent = stack.set(DataComponentTypes.CHARGED_PROJECTILES, ChargedProjectilesComponent.DEFAULT);
+    public void shootAll(Level world, LivingEntity shooter, InteractionHand hand, ItemStack stack, float speed, float divergence, @Nullable LivingEntity target) {
+        if (world instanceof ServerLevel serverWorld) {
+            ChargedProjectiles chargedProjectilesComponent = stack.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
             if (chargedProjectilesComponent != null && !chargedProjectilesComponent.isEmpty()) {
-                this.shootAll(serverWorld, shooter, hand, stack, chargedProjectilesComponent.getProjectiles(), speed, divergence, shooter instanceof PlayerEntity, target);
-                if (shooter instanceof ServerPlayerEntity serverPlayerEntity) {
-                    Criteria.SHOT_CROSSBOW.trigger(serverPlayerEntity, stack);
-                    serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+                this.shoot(serverWorld, shooter, hand, stack, chargedProjectilesComponent.getItems(), speed, divergence, shooter instanceof Player, target);
+                if (shooter instanceof ServerPlayer serverPlayerEntity) {
+                    CriteriaTriggers.SHOT_CROSSBOW.trigger(serverPlayerEntity, stack);
+                    serverPlayerEntity.awardStat(Stats.ITEM_USED.get(stack.getItem()));
                 }
             }
         }
     }
 
     @Override
-    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        if (!world.isClient) {
-            CrossbowItem.LoadingSounds loadingSounds = getLoadingSounds(stack);
-            float f = (float)(stack.getMaxUseTime(user) - remainingUseTicks) / getPullTime(stack, user);
+    public void onUseTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        if (!world.isClientSide()) {
+            CrossbowItem.ChargingSounds loadingSounds = getLoadingSounds(stack);
+            float f = (float)(stack.getUseDuration(user) - remainingUseTicks) / getPullTime(stack, user);
             if (f < 0.2F) {
                 this.charged = false;
                 this.loaded = false;
@@ -187,13 +192,13 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
             if (f >= 0.2F && !this.charged) {
                 this.charged = true;
                 loadingSounds.start()
-                        .ifPresent(sound -> world.playSound(null, user.getX(), user.getY(), user.getZ(), (SoundEvent)sound.value(), SoundCategory.PLAYERS, 0.5F, 1.0F));
+                        .ifPresent(sound -> world.playSound(null, user.getX(), user.getY(), user.getZ(), (SoundEvent)sound.value(), SoundSource.PLAYERS, 0.5F, 1.0F));
             }
 
             if (f >= 0.5F && !this.loaded) {
                 this.loaded = true;
                 loadingSounds.mid()
-                        .ifPresent(sound -> world.playSound(null, user.getX(), user.getY(), user.getZ(), (SoundEvent)sound.value(), SoundCategory.PLAYERS, 0.5F, 1.0F));
+                        .ifPresent(sound -> world.playSound(null, user.getX(), user.getY(), user.getZ(), (SoundEvent)sound.value(), SoundSource.PLAYERS, 0.5F, 1.0F));
             }
 
             if (f >= 1.0F && !isCharged(stack) && loadProjectiles(user, stack)) {
@@ -205,7 +210,7 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
                                         user.getY(),
                                         user.getZ(),
                                         (SoundEvent)sound.value(),
-                                        user.getSoundCategory(),
+                                        user.getSoundSource(),
                                         1.0F,
                                         1.0F / (world.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F
                                 )
@@ -215,18 +220,18 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getUseDuration(ItemStack stack, LivingEntity user) {
         return getPullTime(stack, user) + 3;
     }
 
     public static int getPullTime(ItemStack stack, LivingEntity user) {
-        float f = EnchantmentHelper.getCrossbowChargeTime(stack, user, (float) user.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME));
-        return MathHelper.floor(f * 20.0f);
+        float f = EnchantmentHelper.modifyCrossbowChargingTime(stack, user, (float) user.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME));
+        return Mth.floor(f * 20.0f);
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.CROSSBOW;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.CROSSBOW;
     }
 
 
@@ -239,26 +244,26 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
     }
 
     @Override
-    public boolean isUsedOnRelease(ItemStack stack) {
-        return stack.isOf(this);
+    public boolean useOnRelease(ItemStack stack) {
+        return stack.is(this);
     }
 
     @Override
-    public int getRange() {
+    public int getDefaultProjectileRange() {
         return 8;
     }
 
-    public CrossbowItem.LoadingSounds getLoadingSounds(ItemStack stack) {
-        return (CrossbowItem.LoadingSounds)EnchantmentHelper.getEffect(stack, EnchantmentEffectComponentTypes.CROSSBOW_CHARGING_SOUNDS)
+    public CrossbowItem.ChargingSounds getLoadingSounds(ItemStack stack) {
+        return (CrossbowItem.ChargingSounds)EnchantmentHelper.pickHighestLevel(stack, EnchantmentEffectComponents.CROSSBOW_CHARGING_SOUNDS)
                 .orElse(DEFAULT_LOADING_SOUNDS);
     }
 
-    public static enum ChargeType implements StringIdentifiable {
+    public static enum ChargeType implements StringRepresentable {
         NONE("none"),
         ARROW("arrow"),
         ROCKET("rocket");
 
-        public static final Codec<CustomCrossbow.ChargeType> CODEC = StringIdentifiable.createCodec(CustomCrossbow.ChargeType::values);
+        public static final Codec<CustomCrossbow.ChargeType> CODEC = StringRepresentable.fromEnum(CustomCrossbow.ChargeType::values);
         private final String name;
 
         private ChargeType(final String name) {
@@ -266,7 +271,7 @@ public class CustomCrossbow extends RangedWeaponItem implements CrossbowInterfac
         }
 
         @Override
-        public String asString() {
+        public String getSerializedName() {
             return this.name;
         }
     }

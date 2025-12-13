@@ -6,15 +6,18 @@ import com.kielson.util.ItemHelper;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.component.type.AttributeModifierSlot;
-import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.*;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,21 +28,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static com.kielson.KielsonsAPI.MOD_ID;
 
 @Mixin(BowItem.class)
-abstract class BowItemMixin extends RangedWeaponItem implements BowInterface {
+abstract class BowItemMixin extends ProjectileWeaponItem implements BowInterface {
     @Unique private static final double PROJECTILE_DAMAGE = 6.0;
     @Unique private static final double PULL_TIME = 1.0;
     @Unique private static final double PROJECTILE_VELOCITY = 3.0;
 
 
-    BowItemMixin(Item.Settings settings) {
+    BowItemMixin(Item.Properties settings) {
         super(settings);
     }
 
-    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/RangedWeaponItem;<init>(Lnet/minecraft/item/Item$Settings;)V"))
-    private static Settings KielsonsAPI$addCustomAttributes(Settings settings){
-        return settings.attributeModifiers(AttributeModifiersComponent.builder()
-                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), PROJECTILE_DAMAGE, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
-                .add(KielsonsAPIEntityAttributes.PULL_TIME, new EntityAttributeModifier(Identifier.of(MOD_ID, "bow"), PULL_TIME, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.HAND)
+    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ProjectileWeaponItem;<init>(Lnet/minecraft/world/item/Item$Properties;)V"))
+    private static Properties KielsonsAPI$addCustomAttributes(Properties settings){
+        return settings.attributes(ItemAttributeModifiers.builder()
+                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "bow"), PROJECTILE_DAMAGE, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
+                .add(KielsonsAPIEntityAttributes.PULL_TIME, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "bow"), PULL_TIME, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
                 .build());
     }
 
@@ -61,7 +64,7 @@ abstract class BowItemMixin extends RangedWeaponItem implements BowInterface {
     @Unique private LivingEntity user;
     @Unique private ItemStack itemStack;
 
-    @WrapOperation(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/BowItem;getPullProgress(I)F"))
+    @WrapOperation(method = "releaseUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/BowItem;getPowerForTime(I)F"))
     private float KielsonsAPI$applyCustomPullTime(int useTicks, Operation<Float> original, @Local(argsOnly = true) LivingEntity user, @Local(argsOnly = true) ItemStack itemStack) {
         this.ticks = useTicks;
         this.user = user;
@@ -69,20 +72,20 @@ abstract class BowItemMixin extends RangedWeaponItem implements BowInterface {
         return getCustomPullProgress(useTicks, user, itemStack);
     }
 
-    @ModifyArg(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/BowItem;shootAll(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;Ljava/util/List;FFZLnet/minecraft/entity/LivingEntity;)V"), index = 5)
+    @ModifyArg(method = "releaseUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/BowItem;shoot(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/ItemStack;Ljava/util/List;FFZLnet/minecraft/world/entity/LivingEntity;)V"), index = 5)
     private float KielsonsAPI$applyCustomVelocity(float par6){
         return (float) (getCustomPullProgress(ticks, user, itemStack) * PROJECTILE_VELOCITY);
     }
 
-    @Inject(method = "shoot", at = @At(value = "RETURN"))
-    private void KielsonsAPI$applyCustomDamage(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
-        if (projectile instanceof PersistentProjectileEntity persistentProjectile) {
+    @Inject(method = "shootProjectile", at = @At(value = "RETURN"))
+    private void KielsonsAPI$applyCustomDamage(LivingEntity shooter, Projectile projectile, int index, float speed, float divergence, float yaw, LivingEntity target, CallbackInfo ci) {
+        if (projectile instanceof AbstractArrow persistentProjectile) {
             double damage = shooter.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_DAMAGE) / PROJECTILE_VELOCITY;
-            ItemStack handStack = shooter.getStackInHand(shooter.getActiveHand());
+            ItemStack handStack = shooter.getItemInHand(shooter.getUsedItemHand());
             if (handStack.getItem() instanceof BowItem && ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).isPresent()){
                 damage += (int) ((damage * 0.25) * (ItemHelper.checkEnchantmentLevel(handStack, Enchantments.POWER).get() + 1));
             }
-            persistentProjectile.setDamage(damage);
+            persistentProjectile.setBaseDamage(damage);
         }
     }
 }

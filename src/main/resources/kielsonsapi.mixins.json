@@ -3,15 +3,12 @@
   "package": "com.kielson.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ServerPlayNetworkHandlerMixin",
     "BlockMixin",
     "BowItemMixin",
     "CrossbowItemMixin",
     "LivingEntityMixin",
     "PersistentProjectileEntityMixin",
-    "PlayerEntityMixin",
-    "ProjectileEntityMixin",
-    "TargetPredicateMixin"
+    "PlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
