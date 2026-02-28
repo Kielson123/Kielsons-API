@@ -11,7 +11,6 @@ public class KielsonsAPIEvents {
         for(Healed callback : callbacks) {
             previous = callback.onHeal(livingEntity, previous);
         }
-
         return previous;
     });
 

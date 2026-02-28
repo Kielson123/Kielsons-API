@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kielson.KielsonsAPI.isBetterCombatLoaded;
 import static com.kielson.KielsonsAPIComponents.TWO_HANDED;
 
 public class KielsonsAPIClient implements ClientModInitializer {
@@ -24,7 +25,7 @@ public class KielsonsAPIClient implements ClientModInitializer {
     }
 
     private void addTwoHandedTooltip(ItemStack stack, List<Component> lines){
-        if (Boolean.TRUE.equals(stack.get(TWO_HANDED))) {
+        if (Boolean.TRUE.equals(stack.get(TWO_HANDED)) && !isBetterCombatLoaded()) {
             Optional<Integer> goodValue = Optional.empty();
             for (int i = 0; i < lines.size(); ++i) {
                 Component line = lines.get(i);

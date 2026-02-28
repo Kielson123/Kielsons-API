@@ -26,6 +26,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static com.kielson.KielsonsAPI.isBetterCombatLoaded;
+
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin extends Entity {
     @Unique private final LivingEntity livingEntity = (LivingEntity) (Object) this;
@@ -65,7 +67,7 @@ abstract class LivingEntityMixin extends Entity {
     private void Kielson$getOffHandStack(CallbackInfoReturnable<ItemStack> cir) {
         ItemStack mainHandStack = livingEntity.getItemBySlot(EquipmentSlot.MAINHAND);
         Boolean mainHandStackComponent = mainHandStack.get(KielsonsAPIComponents.TWO_HANDED);
-        if (Boolean.TRUE.equals(mainHandStackComponent)) {
+        if (Boolean.TRUE.equals(mainHandStackComponent) && !isBetterCombatLoaded()) {
             cir.setReturnValue(ItemStack.EMPTY);
         }
     }
@@ -74,7 +76,7 @@ abstract class LivingEntityMixin extends Entity {
     private void Kielson$getMainHandStack(CallbackInfoReturnable<ItemStack> cir) {
         ItemStack offHandStack = livingEntity.getItemBySlot(EquipmentSlot.OFFHAND);
         Boolean offHandStackComponent = offHandStack.get(KielsonsAPIComponents.TWO_HANDED);
-        if (Boolean.TRUE.equals(offHandStackComponent)) {
+        if (Boolean.TRUE.equals(offHandStackComponent) && !isBetterCombatLoaded()) {
             cir.setReturnValue(ItemStack.EMPTY);
         }
     }
