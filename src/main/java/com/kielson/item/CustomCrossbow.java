@@ -6,7 +6,7 @@ import com.kielson.util.ItemHelper;
 import com.mojang.serialization.Codec;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -15,17 +15,16 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.component.ChargedProjectiles;
@@ -39,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-
+import net.minecraft.world.InteractionResultHolder;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -60,13 +59,22 @@ public class CustomCrossbow extends ProjectileWeaponItem implements CrossbowInte
 
     public CustomCrossbow(double rangedDamage, double pullTime, double projectileVelocity, Properties settings) {
         super(settings.attributes(ItemAttributeModifiers.builder()
-                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "custom_crossbow"), rangedDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
-                .add(KielsonsAPIEntityAttributes.PULL_TIME, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "custom_crossbow"), pullTime, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
-                .build())
-                .enchantable(1));
+                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(MOD_ID, "custom_crossbow"), rangedDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
+                .add(KielsonsAPIEntityAttributes.PULL_TIME, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(MOD_ID, "custom_crossbow"), pullTime, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
+                .build()));
 
         instances.add(this);
         this.projectileVelocity = projectileVelocity;
+    }
+
+    @Override
+    public int getEnchantmentValue() {
+        return 1;
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return true;
     }
 
     @Override
@@ -80,19 +88,20 @@ public class CustomCrossbow extends ProjectileWeaponItem implements CrossbowInte
     }
 
     @Override
-    public InteractionResult use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         ItemStack itemStack = user.getItemInHand(hand);
         ChargedProjectiles chargedProjectilesComponent = itemStack.get(DataComponents.CHARGED_PROJECTILES);
+
         if (chargedProjectilesComponent != null && !chargedProjectilesComponent.isEmpty()) {
             this.shootAll(world, user, hand, itemStack, getSpeed(chargedProjectilesComponent), 1.0F, null);
-            return InteractionResult.CONSUME;
+            return InteractionResultHolder.consume(itemStack);
         } else if (!user.getProjectile(itemStack).isEmpty()) {
             this.charged = false;
             this.loaded = false;
             user.startUsingItem(hand);
-            return InteractionResult.CONSUME;
+            return InteractionResultHolder.consume(itemStack);
         } else {
-            return InteractionResult.FAIL;
+            return InteractionResultHolder.fail(itemStack);
         }
     }
 
@@ -101,9 +110,11 @@ public class CustomCrossbow extends ProjectileWeaponItem implements CrossbowInte
     }
 
     @Override
-    public boolean releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    public void releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         int useTicks = this.getUseDuration(stack, user) - remainingUseTicks;
-        return getPullProgress(useTicks, stack, user) >= 1.0F && isCharged(stack);
+        if (getPullProgress(useTicks, stack, user) >= 1.0F && isCharged(stack)) {
+            super.releaseUsing(stack, world, user, remainingUseTicks);
+        }
     }
 
     private static boolean loadProjectiles(LivingEntity shooter, ItemStack crossbow) {
@@ -149,7 +160,7 @@ public class CustomCrossbow extends ProjectileWeaponItem implements CrossbowInte
     }
 
     @Override
-    protected Projectile createProjectile(Level world, LivingEntity shooter, ItemStack weaponStack, ItemStack projectileStack, boolean critical) {
+    protected @NotNull Projectile createProjectile(Level world, LivingEntity shooter, ItemStack weaponStack, ItemStack projectileStack, boolean critical) {
         if (projectileStack.is(Items.FIREWORK_ROCKET)) {
             return new FireworkRocketEntity(world, projectileStack, shooter, shooter.getX(), shooter.getEyeY() - 0.15F, shooter.getZ(), true);
         } else {
@@ -230,8 +241,8 @@ public class CustomCrossbow extends ProjectileWeaponItem implements CrossbowInte
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack stack) {
-        return ItemUseAnimation.CROSSBOW;
+    public @NotNull UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.CROSSBOW;
     }
 
 

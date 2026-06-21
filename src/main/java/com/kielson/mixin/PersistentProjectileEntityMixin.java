@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Random;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 
 @Mixin(AbstractArrow.class)
 abstract class PersistentProjectileEntityMixin {

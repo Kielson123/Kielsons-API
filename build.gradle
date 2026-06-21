@@ -4,7 +4,7 @@ plugins {
 	id "com.modrinth.minotaur" version "2.+"
 }
 
-version = project.mod_version
+version = "${project.mod_version}-${project.minecraft_version}"
 group = project.maven_group
 
 base {
@@ -77,7 +77,8 @@ publishing {
 modrinth {
 	token = project.modrinth_token
 	projectId = "CVdyYsTz"
-	versionNumber = String.valueOf(project.mod_version)
+	versionNumber = "${project.mod_version}-${project.minecraft_version}"
+	versionName = "Kielson's API ${project.mod_version} - ${project.minecraft_version}"
 	versionType = project.version_type
 	uploadFile = remapJar
 	gameVersions = [String.valueOf(project.minecraft_version)]

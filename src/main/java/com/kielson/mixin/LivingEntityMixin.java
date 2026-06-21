@@ -3,11 +3,6 @@ package com.kielson.mixin;
 import com.kielson.KielsonsAPIComponents;
 import com.kielson.KielsonsAPIEntityAttributes;
 import com.kielson.events.KielsonsAPIEvents;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -17,7 +12,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,7 +25,7 @@ import static com.kielson.KielsonsAPI.isBetterCombatLoaded;
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin extends Entity {
     @Unique private final LivingEntity livingEntity = (LivingEntity) (Object) this;
-    @Unique private final Player attackingPlayer = livingEntity.getLastHurtByPlayer();
+    @Unique private final LivingEntity attackingEntity = livingEntity.getLastHurtByMob();
 
     public LivingEntityMixin(EntityType<?> type, Level world) {
         super(type, world);
@@ -53,10 +47,10 @@ abstract class LivingEntityMixin extends Entity {
 
     @ModifyArg(method = "dropExperience", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"), index = 2)
     protected int KielsonsAPI$modifyExperience(int originalXP) {
-        if (this.attackingPlayer == null) {
+        if (this.attackingEntity == null || !(this.attackingEntity instanceof Player)) {
             return originalXP;
         }
-        AttributeInstance attributeInstance = attackingPlayer.getAttribute(KielsonsAPIEntityAttributes.EXPERIENCE);
+        AttributeInstance attributeInstance = attackingEntity.getAttribute(KielsonsAPIEntityAttributes.EXPERIENCE);
         if (attributeInstance == null) {
             return originalXP;
         }
