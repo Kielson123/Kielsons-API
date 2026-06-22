@@ -33,7 +33,7 @@ abstract class BlockMixin {
     }
 
     @Inject(method = "playerDestroy", at = @At("HEAD"))
-    public void KielsonsAPI$saveBreakingPlayer(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack, CallbackInfo callbackInfo) {
+    public void KielsonsAPI$saveBreakingPlayer(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack, CallbackInfo callbackInfo) {
         breakingPlayer = player;
     }
 }

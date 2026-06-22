@@ -3,11 +3,6 @@ package com.kielson.mixin;
 import com.kielson.KielsonsAPIComponents;
 import com.kielson.KielsonsAPIEntityAttributes;
 import com.kielson.events.KielsonsAPIEvents;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -17,7 +12,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -47,8 +41,8 @@ abstract class LivingEntityMixin extends Entity {
     }
 
     @ModifyVariable(method = "heal", at = @At("HEAD"), argsOnly = true)
-    private float KielsonsAPI$heal(float amount) {
-        return KielsonsAPIEvents.ON_HEAL.invoker().onHeal(livingEntity, amount);
+    private float KielsonsAPI$heal(float heal) {
+        return KielsonsAPIEvents.ON_HEAL.invoker().onHeal(livingEntity, heal);
     }
 
     @ModifyArg(method = "dropExperience", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"), index = 2)

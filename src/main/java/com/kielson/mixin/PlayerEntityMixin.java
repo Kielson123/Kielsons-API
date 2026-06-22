@@ -35,24 +35,24 @@ abstract class PlayerEntityMixin extends LivingEntity{
     }
 
     @Inject(method = "giveExperiencePoints", at = @At(value = "HEAD"))
-    private void KielsonsAPI$changeExperience(int experience, CallbackInfo ci) {
+    private void KielsonsAPI$changeExperience(int i, CallbackInfo ci) {
         experienceProgress = experienceProgress * (float) this.getAttributeValue(KielsonsAPIEntityAttributes.EXPERIENCE);
     }
 
     /**
      * @author DaFuqs
      */
-    @ModifyVariable(method = "aiStep", at = @At("STORE"))
-    private AABB KielsonsAPI$adjustCollectionRange(AABB original) {
+    @ModifyVariable(method = "aiStep", at = @At("STORE"), name = "pickupArea")
+    private AABB KielsonsAPI$adjustCollectionRange(AABB pickupArea) {
         AttributeInstance instance = player.getAttribute(KielsonsAPIEntityAttributes.ITEM_PICK_UP_RANGE);
         if (instance != null) {
             double value = instance.getValue();
-            if (original.getXsize() + value < 0) {
-                Vec3 center = original.getCenter();
+            if (pickupArea.getXsize() + value < 0) {
+                Vec3 center = pickupArea.getCenter();
                 return new AABB(center.x, center.y, center.z, center.x, center.y, center.z);
             }
-            return original.inflate(value, value / 2, value);
+            return pickupArea.inflate(value, value / 2, value);
         }
-        return original;
+        return pickupArea;
     }
 }

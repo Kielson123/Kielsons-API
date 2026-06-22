@@ -1,3 +1,7 @@
-accessWidener v2 named
+accessWidener v2 official
 
 accessible method net/minecraft/world/item/CrossbowItem getProjectileShotVector (Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/phys/Vec3;F)Lorg/joml/Vector3f;
+accessible method net/minecraft/world/item/CrossbowItem getShootingPower (Lnet/minecraft/world/item/component/ChargedProjectiles;)F
+accessible method net/minecraft/world/item/CrossbowItem getChargingSounds (Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/CrossbowItem$ChargingSounds;
+accessible method net/minecraft/world/item/CrossbowItem tryLoadProjectiles (Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;)Z
+accessible class net/minecraft/client/renderer/ItemInHandRenderer$HandRenderSelection

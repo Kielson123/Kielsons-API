@@ -1,8 +1,13 @@
 package com.kielson;
 
 import com.kielson.events.KielsonsAPIEvents;
+import com.kielson.item.CustomBow;
+import com.kielson.item.CustomCrossbow;
+import com.kielson.util.ItemHelper;
+import com.kielson.util.RangedWeaponStats;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.world.item.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,11 +19,7 @@ public class KielsonsAPI implements ModInitializer {
 	public void onInitialize() {
 		KielsonsAPIEntityAttributes.initialize();
 		KielsonsAPIComponents.initialize();
-
-		KielsonsAPIEvents.ON_HEAL.register((livingEntity, original) -> {
-			if(original == 0f || livingEntity.getAttribute(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER) == null) return original;
-			return (float) (original * livingEntity.getAttributeValue(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER));
-		});
+		KielsonsAPIEvents.initialize();
 	}
 
 	public static boolean isKielsonsEnhancedCombatLoaded(){
