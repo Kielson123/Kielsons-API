@@ -1,6 +1,5 @@
 package com.kielson.item;
 
-
 import com.kielson.KielsonsAPIEntityAttributes;
 import com.kielson.util.RangedWeaponHelper;
 import com.kielson.util.RangedWeaponStats;

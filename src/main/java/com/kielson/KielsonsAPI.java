@@ -1,10 +1,9 @@
 package com.kielson;
 
 import com.kielson.events.KielsonsAPIEvents;
-import com.kielson.item.CustomBow;
-import com.kielson.item.CustomCrossbow;
+import com.kielson.item.CustomShield;
+import com.kielson.item.ShieldMaterial;
 import com.kielson.util.ItemHelper;
-import com.kielson.util.RangedWeaponStats;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.item.Item;
@@ -22,9 +21,10 @@ public class KielsonsAPI implements ModInitializer {
 		KielsonsAPIEvents.initialize();
 	}
 
-	public static boolean isKielsonsEnhancedCombatLoaded(){
-		return FabricLoader.getInstance().isModLoaded("kielsons_enhanced_combat");
+	public static final Item CUSTOM_SHIELD = ItemHelper.registerItem(MOD_ID, "custom_shield", properties -> new CustomShield(ShieldMaterial.IRON, properties), new Item.Properties());
 
+	public static boolean isEnhancedCombatLoaded(){
+		return FabricLoader.getInstance().isModLoaded("kielsons_enhanced_combat");
 	}
 	public static boolean isBetterCombatLoaded(){
 		return FabricLoader.getInstance().isModLoaded("bettercombat");

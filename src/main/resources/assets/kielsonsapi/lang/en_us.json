@@ -8,5 +8,10 @@
   "attribute.name.generic.accuracy": "Ranged Accuracy",
   "attribute.name.generic.pull_time": "s Pull Time",
 
-  "item.modifiers.two_handed": "Two-Handed"
+  "item.modifiers.two_handed": "Two-Handed",
+
+  "shield.whenUsed": "When Used:",
+  "shield.minBlockedDamage": "Min. %s Damage Blocked",
+  "shield.percBlockedDamage": "%s%% Damage Blocked",
+  "shield.disabledCooldown": "%ss of Disabled Cooldown"
 }

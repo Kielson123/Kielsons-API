@@ -8,5 +8,10 @@
   "attribute.name.generic.accuracy": "celności",
   "attribute.name.generic.pull_time": "s czasu naciągnięcia",
 
-  "item.modifiers.two_handed": "Oburęczny"
+  "item.modifiers.two_handed": "Oburęczny",
+
+  "shield.whenUsed": "Kiedy użyto:",
+  "shield.minBlockedDamage": "Min. %s zablokowanych obrażeń",
+  "shield.percBlockedDamage": "%s%% zablokowanych obrażeń",
+  "shield.disabledCooldown": "%ss opóźnienia po wyłączeniu"
 }
