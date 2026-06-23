@@ -9,6 +9,8 @@ import com.kielson.util.RangedWeaponHelper;
 import com.kielson.util.RangedWeaponStats;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
@@ -58,11 +60,22 @@ public class CustomBow extends BowItem {
         if (power < 0.1F) return false;
 
         List<ItemStack> shots = draw(stack, ammo, player);
-        if (level instanceof ServerLevel serverLevel && !shots.isEmpty()) {
-            this.shoot(serverLevel, player, player.getUsedItemHand(), stack, shots, power * (float) stats.velocity(), 1.0F, power == 1.0F, null);
+
+        if (!shots.isEmpty()) {
+            if (level instanceof ServerLevel serverLevel) {
+                this.shoot(serverLevel, player, player.getUsedItemHand(), stack, shots, power * (float) stats.velocity(), 1.0F, power == 1.0F, null);
+            }
+            level.playSound(
+                    player,
+                    player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.ARROW_SHOOT,
+                    SoundSource.PLAYERS,
+                    1.0F,
+                    1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + power * 0.5F
+            );
+            player.awardStat(Stats.ITEM_USED.get(this));
         }
 
-        player.awardStat(Stats.ITEM_USED.get(this));
         return false;
     }
 
