@@ -5,6 +5,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+
+import com.kielson.client.ShieldSpecialRenderer;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.model.*;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -16,6 +22,8 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -57,5 +65,23 @@ public class ItemHelper {
 
     public static Item registerItem(String modId, String name, Item.Properties settings) {
         return registerItem(modId, name, Item::new, settings);
+    }
+
+    private static void generateShield(ItemModelGenerators itemModelGenerator, String namespace, String id, ShieldItem item) {
+        id = id.replace(namespace + ":", "");
+        Identifier vanillaShieldModelLocation = ModelLocationUtils.getModelLocation(Items.SHIELD);
+        var modelLocation = Identifier.fromNamespaceAndPath(namespace, "item/" + id);
+        var modelLayer = Identifier.fromNamespaceAndPath(namespace, id);
+
+        ModelTemplate shieldTemplate = new ModelTemplate(Optional.of(vanillaShieldModelLocation), Optional.empty(), TextureSlot.PARTICLE);
+        shieldTemplate.create(modelLocation, TextureMapping.singleSlot(TextureSlot.PARTICLE, new Material(ModelLocationUtils.getModelLocation(item))), itemModelGenerator.modelOutput);
+
+        ModelTemplate blockingShieldTemplate = new ModelTemplate(Optional.of(vanillaShieldModelLocation.withSuffix("_blocking")), Optional.empty(), TextureSlot.PARTICLE);
+        blockingShieldTemplate.create(modelLocation.withSuffix("_blocking"), TextureMapping.singleSlot(TextureSlot.PARTICLE, new Material(ModelLocationUtils.getModelLocation(item))), itemModelGenerator.modelOutput);
+
+        var model = new ShieldSpecialRenderer.Unbaked(modelLayer, Identifier.fromNamespaceAndPath(namespace,  id + "_base"), Identifier.fromNamespaceAndPath(namespace, id + "_base_nopattern"));
+        ItemModel.Unbaked normal = ItemModelUtils.specialModel(ModelLocationUtils.getModelLocation(item), model);
+        ItemModel.Unbaked blocking = ItemModelUtils.specialModel(ModelLocationUtils.getModelLocation(item, "_blocking"), model);
+        itemModelGenerator.itemModelOutput.accept(item, ItemModelUtils.conditional(ShieldSpecialRenderer.DEFAULT_TRANSFORMATION, ItemModelUtils.isUsingItem(), blocking, normal));
     }
 }
