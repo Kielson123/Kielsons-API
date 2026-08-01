@@ -26,7 +26,5 @@ public class KielsonsAPIClient implements ClientModInitializer {
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
             TooltipHelper.updateTooltipText(stack, lines);
         });
-
-        SpecialModelRenderers.ID_MAPPER.put(Identifier.fromNamespaceAndPath(MOD_ID, "shields"), ShieldSpecialRenderer.Unbaked.MAP_CODEC);
     }
 }
