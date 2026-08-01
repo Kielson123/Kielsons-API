@@ -77,7 +77,7 @@ public class ItemHelper {
         ModelLayerRegistry.registerModelLayer(modelLayer, ShieldModel::createLayer);
     }
 
-    private static void generateShield(ItemModelGenerators itemModelGenerator, String namespace, String id, ShieldItem item) {
+    public static void generateShield(ItemModelGenerators itemModelGenerator, String namespace, String id, ShieldItem item) {
         id = id.replace(namespace + ":", "");
         Identifier vanillaShieldModelLocation = ModelLocationUtils.getModelLocation(Items.SHIELD);
         var modelLocation = Identifier.fromNamespaceAndPath(namespace, "item/" + id);
