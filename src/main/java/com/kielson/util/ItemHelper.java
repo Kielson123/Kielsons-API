@@ -31,8 +31,6 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
-import static com.kielson.KielsonsAPI.MOD_ID;
-
 public class ItemHelper {
 
     public static Optional<Integer> checkEnchantmentLevel(ItemStack itemStack, ResourceKey<Enchantment> enchantment){
@@ -72,8 +70,8 @@ public class ItemHelper {
         return registerItem(modId, name, Item::new, settings);
     }
 
-    public static void registerDynamicShield(String id) {
-        ModelLayerLocation modelLayer = new ModelLayerLocation(Identifier.fromNamespaceAndPath(MOD_ID, id), "main");
+    public static void registerDynamicShield(String namespace, String id) {
+        ModelLayerLocation modelLayer = new ModelLayerLocation(Identifier.fromNamespaceAndPath(namespace, id), "main");
         ModelLayerRegistry.registerModelLayer(modelLayer, ShieldModel::createLayer);
     }
 
