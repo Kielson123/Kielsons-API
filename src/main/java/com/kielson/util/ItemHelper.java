@@ -7,8 +7,11 @@ import java.util.Set;
 import java.util.function.Function;
 
 import com.kielson.client.ShieldSpecialRenderer;
+import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.model.*;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.object.equipment.ShieldModel;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Holder;
@@ -27,6 +30,8 @@ import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+
+import static com.kielson.KielsonsAPI.MOD_ID;
 
 public class ItemHelper {
 
@@ -65,6 +70,11 @@ public class ItemHelper {
 
     public static Item registerItem(String modId, String name, Item.Properties settings) {
         return registerItem(modId, name, Item::new, settings);
+    }
+
+    public static void registerDynamicShield(String id) {
+        ModelLayerLocation modelLayer = new ModelLayerLocation(Identifier.fromNamespaceAndPath(MOD_ID, id), "main");
+        ModelLayerRegistry.registerModelLayer(modelLayer, ShieldModel::createLayer);
     }
 
     private static void generateShield(ItemModelGenerators itemModelGenerator, String namespace, String id, ShieldItem item) {

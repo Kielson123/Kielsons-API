@@ -21,12 +21,6 @@ import static com.kielson.KielsonsAPI.isBetterCombatLoaded;
 import static com.kielson.KielsonsAPIComponents.TWO_HANDED;
 
 public class KielsonsAPIClient implements ClientModInitializer {
-
-    public static void registerDynamicShield(String id) {
-        ModelLayerLocation modelLayer = new ModelLayerLocation(Identifier.fromNamespaceAndPath(MOD_ID, id), "main");
-        ModelLayerRegistry.registerModelLayer(modelLayer, ShieldModel::createLayer);
-    }
-
     @Override
     public void onInitializeClient() {
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
