@@ -21,10 +21,12 @@ public class KielsonsAPI implements ModInitializer {
 		KielsonsAPIEvents.initialize();
 	}
 
-	public static final Item CUSTOM_SHIELD = ItemHelper.registerItem(MOD_ID, "custom_shield", properties -> new CustomShield(ShieldMaterial.IRON, properties), new Item.Properties());
+	public static boolean isExpandedWeaponryLoaded(){
+		return FabricLoader.getInstance().isModLoaded("expanded_weaponry");
+	}
 
-	public static boolean isEnhancedCombatLoaded(){
-		return FabricLoader.getInstance().isModLoaded("kielsons_enhanced_combat");
+	public static boolean isRingsAndThingsLoaded(){
+		return FabricLoader.getInstance().isModLoaded("rings_and_things");
 	}
 	public static boolean isBetterCombatLoaded(){
 		return FabricLoader.getInstance().isModLoaded("bettercombat");
