@@ -13,6 +13,8 @@ public class KielsonsAPIEntityAttributes {
 
     public static final Holder<Attribute> HEALING_MULTIPLIER = register("healing_multiplier",
             new RangedAttribute("attribute.name.generic.healing_multiplier", 1, 0, 1024).setSyncable(true));
+    public static final Holder<Attribute> PASSIVE_REGENERATION = register("passive_regeneration",
+            new RangedAttribute("attribute.name.generic.passive_regeneration", 0, 0, 1024).setSyncable(true));
     public static final Holder<Attribute> EXPERIENCE = register("experience",
             new RangedAttribute("attribute.name.generic.experience", 1, 0,1024).setSyncable(true));
     public static final Holder<Attribute> SWIMMING_SPEED = register("swimming_speed",

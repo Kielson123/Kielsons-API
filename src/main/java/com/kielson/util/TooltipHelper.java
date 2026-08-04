@@ -62,6 +62,7 @@ public class TooltipHelper {
         String percBlockedDamage = String.valueOf(damageReduction.factor() * 100).replaceAll("[.]0+", "");
         String disabledCooldown = String.valueOf(Objects.requireNonNull(stack.get(DataComponents.BLOCKS_ATTACKS)).disableCooldownScale() * 5).replaceAll("[.]0+", "");
 
+        lines.addLast(Component.literal(""));
         lines.addLast(Component.translatable("shield.whenUsed").withStyle(ChatFormatting.GRAY));
         lines.addLast(Component.literal(" ").append(Component.translatable("shield.minBlockedDamage", minBlockedDamage).withStyle(ChatFormatting.BLUE)));
         lines.addLast(Component.literal(" ").append(Component.translatable("shield.percBlockedDamage", percBlockedDamage).withStyle(ChatFormatting.BLUE)));

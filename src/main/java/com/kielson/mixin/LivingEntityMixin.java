@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static com.kielson.KielsonsAPI.isBetterCombatLoaded;
@@ -26,6 +27,7 @@ import static com.kielson.KielsonsAPI.isBetterCombatLoaded;
 abstract class LivingEntityMixin extends Entity {
     @Unique private final LivingEntity livingEntity = (LivingEntity) (Object) this;
     @Unique private final Player attackingPlayer = livingEntity.getLastHurtByPlayer();
+    @Unique private int ticks;
 
     public LivingEntityMixin(EntityType<?> type, Level world) {
         super(type, world);
@@ -34,6 +36,7 @@ abstract class LivingEntityMixin extends Entity {
     @Inject(method = "createLivingAttributes()Lnet/minecraft/world/entity/ai/attributes/AttributeSupplier$Builder;", require = 1, allow = 1, at = @At("RETURN"))
     private static void KielsonsAPI$addAttributes(final CallbackInfoReturnable<AttributeSupplier.Builder> info) {
         info.getReturnValue()
+                .add(KielsonsAPIEntityAttributes.PASSIVE_REGENERATION)
                 .add(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER)
                 .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE)
                 .add(KielsonsAPIEntityAttributes.SWIMMING_SPEED)
@@ -72,6 +75,18 @@ abstract class LivingEntityMixin extends Entity {
         Boolean offHandStackComponent = offHandStack.get(KielsonsAPIComponents.TWO_HANDED);
         if (Boolean.TRUE.equals(offHandStackComponent) && !isBetterCombatLoaded()) {
             cir.setReturnValue(ItemStack.EMPTY);
+        }
+    }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void Kielson$tick(CallbackInfo info) {
+        LivingEntity livingEntity = (LivingEntity)(Object)this;
+
+        if(this.ticks < 20) {
+            this.ticks++;
+        } else {
+            KielsonsAPIEvents.EVERY_SECOND.invoker().everySecond(livingEntity);
+            this.ticks = 0;
         }
     }
 }
