@@ -1,6 +1,5 @@
 package com.kielson.mixin.client;
 
-import com.kielson.item.CustomBow;
 import com.kielson.item.CustomCrossbow;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;

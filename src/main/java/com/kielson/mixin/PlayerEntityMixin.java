@@ -36,7 +36,9 @@ abstract class PlayerEntityMixin extends LivingEntity{
 
     @Inject(method = "giveExperiencePoints", at = @At(value = "HEAD"))
     private void KielsonsAPI$changeExperience(int i, CallbackInfo ci) {
-        experienceProgress = experienceProgress * (float) this.getAttributeValue(KielsonsAPIEntityAttributes.EXPERIENCE);
+        if(this.getAttribute(KielsonsAPIEntityAttributes.EXPERIENCE) != null) {
+            experienceProgress = experienceProgress * (float) this.getAttributeValue(KielsonsAPIEntityAttributes.EXPERIENCE);
+        }
     }
 
     /**

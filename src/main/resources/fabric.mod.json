@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "kielsonsapi",
-	"version": "1.3",
+	"version": "1.3.1",
 	"name": "KielsonsAPI",
 	"description": "Common code for all of Kielson's mods.",
 	"authors": [

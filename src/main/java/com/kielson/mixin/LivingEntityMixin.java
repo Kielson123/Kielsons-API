@@ -80,8 +80,6 @@ abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void Kielson$tick(CallbackInfo info) {
-        LivingEntity livingEntity = (LivingEntity)(Object)this;
-
         if(this.ticks < 20) {
             this.ticks++;
         } else {

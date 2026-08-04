@@ -93,7 +93,7 @@ public class CustomCrossbow extends CrossbowItem {
         super.shootProjectile(shooter, projectile, index, power, uncertainty, angle, targetOverride);
 
         if (projectile instanceof AbstractArrow arrow) {
-            RangedWeaponHelper.applyArrowDamage(shooter, arrow, power);
+            RangedWeaponHelper.applyArrowDamage(shooter, arrow, power, stats.damage());
         }
     }
 
@@ -102,7 +102,12 @@ public class CustomCrossbow extends CrossbowItem {
         Projectile proj = super.createProjectile(level, shooter, weapon, ammo, crit);
 
         if (proj instanceof AbstractArrow arrow) {
-            arrow.setBaseDamage(shooter.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_DAMAGE) / stats.velocity());
+            if(shooter.getAttribute(KielsonsAPIEntityAttributes.RANGED_DAMAGE) == null){
+                arrow.setBaseDamage(9 / stats.velocity());
+            }
+            else {
+                arrow.setBaseDamage(shooter.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_DAMAGE) / stats.velocity());
+            }
         }
         return proj;
     }

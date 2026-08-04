@@ -22,6 +22,9 @@ abstract class AbstractClientPlayerMixin{
 
     @ModifyConstant(method = "getFieldOfViewModifier", constant = @Constant(floatValue = 20.0F))
     private float KielsonsAPI$getFovMultiplierForPullTime(float value) {
-        return Math.clamp((float) (abstractClientPlayer.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME) * 20.0), 0.01f, Float.MAX_VALUE);
+        if(abstractClientPlayer.getAttribute(KielsonsAPIEntityAttributes.PULL_TIME) != null) {
+            return Math.clamp((float) (abstractClientPlayer.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME) * 20.0), 0.01f, Float.MAX_VALUE);
+        }
+        return value;
     }
 }

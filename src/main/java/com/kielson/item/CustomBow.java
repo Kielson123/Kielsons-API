@@ -56,7 +56,7 @@ public class CustomBow extends BowItem {
         if (ammo.isEmpty()) return false;
 
         int timeHeld = this.getUseDuration(stack, entity) - timeLeft;
-        float power = RangedWeaponHelper.getBowPower(timeHeld, entity);
+        float power = RangedWeaponHelper.getBowPower(timeHeld, entity, stats.pullTime());
         if (power < 0.1F) return false;
 
         List<ItemStack> shots = draw(stack, ammo, player);
@@ -84,7 +84,7 @@ public class CustomBow extends BowItem {
         super.shootProjectile(shooter, projectile, index, power, uncertainty, angle, targetOverride);
 
         if (projectile instanceof AbstractArrow arrow) {
-            RangedWeaponHelper.applyArrowDamage(shooter, arrow, power);
+            RangedWeaponHelper.applyArrowDamage(shooter, arrow, power, stats.damage());
         }
     }
 
