@@ -16,12 +16,12 @@ abstract class AbstractClientPlayerMixin{
     @Unique private final AbstractClientPlayer abstractClientPlayer = (AbstractClientPlayer)(Object) this;
 
     @Redirect(method = "getFieldOfViewModifier", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;is(Ljava/lang/Object;)Z"))
-    private boolean KielsonsAPI$getFovMultiplier(ItemStack instance, Object o){
+    private boolean Kielson$getFovMultiplier(ItemStack instance, Object o){
         return o instanceof ProjectileWeaponItem && !(abstractClientPlayer.isScoping());
     }
 
     @ModifyConstant(method = "getFieldOfViewModifier", constant = @Constant(floatValue = 20.0F))
-    private float KielsonsAPI$getFovMultiplierForPullTime(float value) {
+    private float Kielson$getFovMultiplierForPullTime(float value) {
         if(abstractClientPlayer.getAttribute(KielsonsAPIEntityAttributes.PULL_TIME) != null) {
             return Math.clamp((float) (abstractClientPlayer.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME) * 20.0), 0.01f, Float.MAX_VALUE);
         }

@@ -21,11 +21,11 @@ abstract class BlockMixin {
     @Unique private Player breakingPlayer;
 
     @ModifyArg(method = "popExperience", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"))
-    private int KielsonsAPI$modifyExperience(int originalXP) {
+    private int Kielson$modifyExperience(int originalXP) {
         if(breakingPlayer == null) {
             return originalXP;
         }
-        AttributeInstance attributeInstance = breakingPlayer.getAttribute(KielsonsAPIEntityAttributes.EXPERIENCE);
+        AttributeInstance attributeInstance = breakingPlayer.getAttribute(KielsonsAPIEntityAttributes.EXPERIENCE_MULTIPLIER);
         if (attributeInstance == null) {
             return originalXP;
         }
@@ -33,7 +33,7 @@ abstract class BlockMixin {
     }
 
     @Inject(method = "playerDestroy", at = @At("HEAD"))
-    public void KielsonsAPI$saveBreakingPlayer(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack, CallbackInfo callbackInfo) {
+    public void Kielson$saveBreakingPlayer(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack, CallbackInfo callbackInfo) {
         breakingPlayer = player;
     }
 }

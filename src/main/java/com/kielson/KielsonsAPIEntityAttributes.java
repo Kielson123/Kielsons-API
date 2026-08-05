@@ -11,24 +11,51 @@ import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 
 public class KielsonsAPIEntityAttributes {
 
-    public static final Holder<Attribute> HEALING_MULTIPLIER = register("healing_multiplier",
-            new RangedAttribute("attribute.name.generic.healing_multiplier", 1, 0, 1024).setSyncable(true));
-    public static final Holder<Attribute> PASSIVE_REGENERATION = register("passive_regeneration",
-            new RangedAttribute("attribute.name.generic.passive_regeneration", 0, 0, 1024).setSyncable(true));
-    public static final Holder<Attribute> EXPERIENCE = register("experience",
-            new RangedAttribute("attribute.name.generic.experience", 1, 0,1024).setSyncable(true));
-    public static final Holder<Attribute> SWIMMING_SPEED = register("swimming_speed",
-            new RangedAttribute("attribute.name.generic.swimming_speed", 0.5, 0, 1).setSyncable(true));
-    public static final Holder<Attribute> ITEM_PICK_UP_RANGE = register("item_pick_up_range",
-            new RangedAttribute("attribute.name.generic.item_pick_up_range", 0, -64, 64).setSyncable(true));
-    public static final Holder<Attribute> RANGED_DAMAGE = register("ranged_damage",
-            new RangedAttribute("attribute.name.generic.ranged_damage", 0, 0, 2048).setSyncable(true));
-    public static final Holder<Attribute> PULL_TIME = register("pull_time",
-            new RangedAttribute("attribute.name.generic.pull_time", 0, 0, 2048).setSyncable(true));
+    public static final Holder<Attribute> HEALING_MULTIPLIER = registerRanged("healing_multiplier", 1, 0, 1024);
+    public static final Holder<Attribute> PASSIVE_REGENERATION = registerRanged("passive_regeneration",0, 0, 1024);
+    public static final Holder<Attribute> EXPERIENCE_MULTIPLIER = registerRanged("experience_multiplier",1, 0,1024);
+    public static final Holder<Attribute> TRADE_DISCOUNT_MULTIPLIER = registerRanged("trade_discount_multiplier",1, 0,64, Attribute.Sentiment.NEGATIVE);
+    public static final Holder<Attribute> SWIMMING_SPEED = registerRanged("swimming_speed",0.5, 0, 1);
+    public static final Holder<Attribute> ITEM_PICK_UP_RANGE = registerRanged("item_pick_up_range",0, -64, 64);
+    public static final Holder<Attribute> RANGED_DAMAGE = registerRanged("ranged_damage",0, 0, 2048);
+    public static final Holder<Attribute> PULL_TIME = registerRanged("pull_time",0, 0, 2048);
+    public static final Holder<Attribute> FREEZING_RESISTANCE = registerRanged("freezing_resistance",0, 0, 1);
+
+    public static final Holder<Attribute> BLINDNESS_IMMUNITY = registerBoolean("blindness_immunity", false);
+    public static final Holder<Attribute> DARKNESS_IMMUNITY = registerBoolean("darkness_immunity", false);
+    public static final Holder<Attribute> WEAKNESS_IMMUNITY = registerBoolean("weakness_immunity", false);
+    public static final Holder<Attribute> MINING_FATIGUE_IMMUNITY = registerBoolean("mining_fatigue_immunity", false);
+    public static final Holder<Attribute> POISON_IMMUNITY = registerBoolean("poison_immunity", false);
+    public static final Holder<Attribute> WITHER_IMMUNITY = registerBoolean("wither_immunity", false);
+    public static final Holder<Attribute> CREEPER_IMMUNITY = registerBoolean("creeper_immunity", false);
+    public static final Holder<Attribute> VOID_IMMUNITY = registerBoolean("void_immunity", false);
+    public static final Holder<Attribute> LEVITATION_IMMUNITY = registerBoolean("levitation_immunity", false);
+    public static final Holder<Attribute> SLOWNESS_IMMUNITY = registerBoolean("slowness_immunity", false);
+    public static final Holder<Attribute> WATER_MOB_IMMUNITY = registerBoolean("water_mob_immunity", false);
+    public static final Holder<Attribute> ILLAGER_IMMUNITY = registerBoolean("illager_immunity", false);
+    public static final Holder<Attribute> PIGLIN_IMMUNITY = registerBoolean("piglin_immunity", false);
 
 
-    private static Holder<Attribute> register(String name, Attribute attribute) {
-        return Registry.registerForHolder(BuiltInRegistries.ATTRIBUTE, Identifier.fromNamespaceAndPath(MOD_ID, name), attribute);
+    private static Holder<Attribute> registerRanged(String name, double defaultValue, double minValue, double maxValue) {
+        return Registry.registerForHolder(BuiltInRegistries.ATTRIBUTE, Identifier.fromNamespaceAndPath(MOD_ID, name),
+                new RangedAttribute("attribute.name." + name, defaultValue, minValue, maxValue).setSyncable(true));
+    }
+
+    private static Holder<Attribute> registerRanged(String name, double defaultValue, double minValue, double maxValue, Attribute.Sentiment sentiment) {
+        return Registry.registerForHolder(BuiltInRegistries.ATTRIBUTE, Identifier.fromNamespaceAndPath(MOD_ID, name),
+                new RangedAttribute("attribute.name." + name, defaultValue, minValue, maxValue).setSyncable(true).setSentiment(sentiment));
+    }
+
+    private static Holder<Attribute> registerBoolean(String name, boolean defaultValue) {
+        double defaultValueDouble = defaultValue ? 1.0 : 0.0;
+        return Registry.registerForHolder(BuiltInRegistries.ATTRIBUTE, Identifier.fromNamespaceAndPath(MOD_ID, name),
+                new RangedAttribute("attribute.name." + name, defaultValueDouble, 0.0, 1.0).setSyncable(true));
+    }
+
+    private static Holder<Attribute> registerBoolean(String name, boolean defaultValue, Attribute.Sentiment sentiment) {
+        double defaultValueDouble = defaultValue ? 1.0 : 0.0;
+        return Registry.registerForHolder(BuiltInRegistries.ATTRIBUTE, Identifier.fromNamespaceAndPath(MOD_ID, name),
+                new RangedAttribute("attribute.name." + name, defaultValueDouble, 0.0, 1.0).setSyncable(true).setSentiment(sentiment));
     }
 
     public static void initialize() {}

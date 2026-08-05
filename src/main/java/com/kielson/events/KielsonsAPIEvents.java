@@ -13,9 +13,14 @@ public class KielsonsAPIEvents {
         }
         return previous;
     });
-    public static final Event<Tick> EVERY_SECOND = EventFactory.createArrayBacked(Tick.class, callbacks -> livingEntity -> {
-        for(Tick callback : callbacks) {
+    public static final Event<TickSecond> EVERY_SECOND = EventFactory.createArrayBacked(TickSecond.class, callbacks -> livingEntity -> {
+        for(TickSecond callback : callbacks) {
             callback.everySecond(livingEntity);
+        }
+    });
+    public static final Event<TickMinute> EVERY_MINUTE = EventFactory.createArrayBacked(TickMinute.class, callbacks -> livingEntity -> {
+        for(TickMinute callback : callbacks) {
+            callback.everyMinute(livingEntity);
         }
     });
 
@@ -24,8 +29,12 @@ public class KielsonsAPIEvents {
         float onHeal(final LivingEntity livingEntity, final float original);
     }
     @FunctionalInterface
-    public interface Tick {
+    public interface TickSecond {
         void everySecond(final LivingEntity livingEntity);
+    }
+    @FunctionalInterface
+    public interface TickMinute {
+        void everyMinute(final LivingEntity livingEntity);
     }
 
     public static void initialize() {
