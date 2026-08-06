@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
@@ -76,6 +77,19 @@ public class LivingEntityMixin {
                 cir.setReturnValue(false);
             }
         }
+    }
+
+    @ModifyArg(method = "travelInWater", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;moveRelative(FLnet/minecraft/world/phys/Vec3;)V"), index = 0)
+    private float Kielson$modifySwimThrust(float originalThrust) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+
+        if (entity.getAttributes().hasAttribute(KielsonsAPIAttributes.SWIMMING_SPEED)) {
+            double multiplier = entity.getAttributeValue(KielsonsAPIAttributes.SWIMMING_SPEED);
+
+            return (float) (originalThrust * multiplier);
+        }
+
+        return originalThrust;
     }
 
     @Inject(method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)

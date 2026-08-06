@@ -15,7 +15,7 @@ public class KielsonsAPIAttributes {
     public static final Holder<Attribute> PASSIVE_REGENERATION = registerRanged("passive_regeneration",0, 0, 1024);
     public static final Holder<Attribute> EXPERIENCE_MULTIPLIER = registerRanged("experience_multiplier",1, 0,1024);
     public static final Holder<Attribute> TRADE_DISCOUNT_MULTIPLIER = registerRanged("trade_discount_multiplier",1, 0,64, Attribute.Sentiment.NEGATIVE);
-    public static final Holder<Attribute> SWIMMING_SPEED = registerRanged("swimming_speed",0.5, 0, 1);
+    public static final Holder<Attribute> SWIMMING_SPEED = registerRanged("swimming_speed",1, 0, 1024);
     public static final Holder<Attribute> ITEM_PICK_UP_RANGE = registerRanged("item_pick_up_range",0, -64, 64);
     public static final Holder<Attribute> RANGED_DAMAGE = registerRanged("ranged_damage",0, 0, 2048);
     public static final Holder<Attribute> PULL_TIME = registerRanged("pull_time",0, 0, 2048, Attribute.Sentiment.NEGATIVE);
