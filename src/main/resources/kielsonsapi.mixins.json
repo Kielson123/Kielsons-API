@@ -3,7 +3,10 @@
   "package": "com.kielson.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "BlockMixin",
+    "LivingEntityMixin",
     "entity_attributes.EntityMixin",
+    "entity_attributes.ItemAttributeModifiersDefaultDisplayMixin",
     "entity_attributes.LivingEntityMixin",
     "entity_attributes.MobMixin",
     "entity_attributes.PlayerMixin",
@@ -14,9 +17,7 @@
     "luck.LootPoolMixin",
     "luck.LootPoolSingletonContainerMixin",
     "ranged.BowItemMixin",
-    "ranged.CrossbowItemMixin",
-    "BlockMixin",
-    "LivingEntityMixin"
+    "ranged.CrossbowItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

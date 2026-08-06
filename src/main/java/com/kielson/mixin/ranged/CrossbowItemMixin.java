@@ -1,6 +1,6 @@
 package com.kielson.mixin.ranged;
 
-import com.kielson.KielsonsAPIEntityAttributes;
+import com.kielson.KielsonsAPIAttributes;
 import com.kielson.item.CustomCrossbow;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -27,8 +27,8 @@ abstract class CrossbowItemMixin {
             return settings;
         }
         return settings.attributes(ItemAttributeModifiers.builder()
-                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "crossbow"), PROJECTILE_DAMAGE, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
-                .add(KielsonsAPIEntityAttributes.PULL_TIME, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "crossbow"), PULL_TIME, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
+                .add(KielsonsAPIAttributes.RANGED_DAMAGE, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "crossbow"), PROJECTILE_DAMAGE, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
+                .add(KielsonsAPIAttributes.PULL_TIME, new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "crossbow"), PULL_TIME, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
                 .build());
     }
 }

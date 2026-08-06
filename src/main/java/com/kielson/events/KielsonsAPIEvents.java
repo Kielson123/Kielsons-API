@@ -1,6 +1,6 @@
 package com.kielson.events;
 
-import com.kielson.KielsonsAPIEntityAttributes;
+import com.kielson.KielsonsAPIAttributes;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,12 +39,12 @@ public class KielsonsAPIEvents {
 
     public static void initialize() {
         KielsonsAPIEvents.ON_HEAL.register((livingEntity, original) -> {
-            if(original == 0f || livingEntity.getAttribute(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER) == null) return original;
-            return (float) (original * livingEntity.getAttributeValue(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER));
+            if(original == 0f || livingEntity.getAttribute(KielsonsAPIAttributes.HEALING_MULTIPLIER) == null) return original;
+            return (float) (original * livingEntity.getAttributeValue(KielsonsAPIAttributes.HEALING_MULTIPLIER));
         });
         KielsonsAPIEvents.EVERY_SECOND.register(livingEntity -> {
-            if(livingEntity.getAttribute(KielsonsAPIEntityAttributes.PASSIVE_REGENERATION) != null){
-                double attributeValue = livingEntity.getAttributeValue(KielsonsAPIEntityAttributes.PASSIVE_REGENERATION);
+            if(livingEntity.getAttribute(KielsonsAPIAttributes.PASSIVE_REGENERATION) != null){
+                double attributeValue = livingEntity.getAttributeValue(KielsonsAPIAttributes.PASSIVE_REGENERATION);
                 if(attributeValue > 0){
                     livingEntity.heal((float) attributeValue);
                 }

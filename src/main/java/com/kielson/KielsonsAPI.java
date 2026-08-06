@@ -1,12 +1,8 @@
 package com.kielson;
 
 import com.kielson.events.KielsonsAPIEvents;
-import com.kielson.item.CustomShield;
-import com.kielson.item.ShieldMaterial;
-import com.kielson.util.ItemHelper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.item.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +12,7 @@ public class KielsonsAPI implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		KielsonsAPIEntityAttributes.initialize();
+		KielsonsAPIAttributes.initialize();
 		KielsonsAPIComponents.initialize();
 		KielsonsAPIEvents.initialize();
 	}

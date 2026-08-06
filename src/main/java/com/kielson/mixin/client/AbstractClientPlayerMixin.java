@@ -1,6 +1,6 @@
 package com.kielson.mixin.client;
 
-import com.kielson.KielsonsAPIEntityAttributes;
+import com.kielson.KielsonsAPIAttributes;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -22,8 +22,8 @@ abstract class AbstractClientPlayerMixin{
 
     @ModifyConstant(method = "getFieldOfViewModifier", constant = @Constant(floatValue = 20.0F))
     private float Kielson$getFovMultiplierForPullTime(float value) {
-        if(abstractClientPlayer.getAttribute(KielsonsAPIEntityAttributes.PULL_TIME) != null) {
-            return Math.clamp((float) (abstractClientPlayer.getAttributeValue(KielsonsAPIEntityAttributes.PULL_TIME) * 20.0), 0.01f, Float.MAX_VALUE);
+        if(abstractClientPlayer.getAttribute(KielsonsAPIAttributes.PULL_TIME) != null) {
+            return Math.clamp((float) (abstractClientPlayer.getAttributeValue(KielsonsAPIAttributes.PULL_TIME) * 20.0), 0.01f, Float.MAX_VALUE);
         }
         return value;
     }

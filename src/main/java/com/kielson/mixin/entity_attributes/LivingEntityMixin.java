@@ -1,6 +1,6 @@
 package com.kielson.mixin.entity_attributes;
 
-import com.kielson.KielsonsAPIEntityAttributes;
+import com.kielson.KielsonsAPIAttributes;
 import com.kielson.util.BooleanAttribute;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -26,21 +26,21 @@ public class LivingEntityMixin {
     @Inject(method = "createLivingAttributes()Lnet/minecraft/world/entity/ai/attributes/AttributeSupplier$Builder;", require = 1, allow = 1, at = @At("RETURN"))
     private static void Kielson$addAttributes(final CallbackInfoReturnable<AttributeSupplier.Builder> info) {
         info.getReturnValue()
-                .add(KielsonsAPIEntityAttributes.FREEZING_RESISTANCE)
-                .add(KielsonsAPIEntityAttributes.PASSIVE_REGENERATION)
-                .add(KielsonsAPIEntityAttributes.HEALING_MULTIPLIER)
-                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE)
-                .add(KielsonsAPIEntityAttributes.SWIMMING_SPEED)
-                .add(KielsonsAPIEntityAttributes.PULL_TIME)
+                .add(KielsonsAPIAttributes.FREEZING_RESISTANCE)
+                .add(KielsonsAPIAttributes.PASSIVE_REGENERATION)
+                .add(KielsonsAPIAttributes.HEALING_MULTIPLIER)
+                .add(KielsonsAPIAttributes.RANGED_DAMAGE)
+                .add(KielsonsAPIAttributes.SWIMMING_SPEED)
+                .add(KielsonsAPIAttributes.PULL_TIME)
 
-                .add(KielsonsAPIEntityAttributes.BLINDNESS_IMMUNITY)
-                .add(KielsonsAPIEntityAttributes.DARKNESS_IMMUNITY)
-                .add(KielsonsAPIEntityAttributes.WEAKNESS_IMMUNITY)
-                .add(KielsonsAPIEntityAttributes.MINING_FATIGUE_IMMUNITY)
-                .add(KielsonsAPIEntityAttributes.POISON_IMMUNITY)
-                .add(KielsonsAPIEntityAttributes.WITHER_IMMUNITY)
-                .add(KielsonsAPIEntityAttributes.LEVITATION_IMMUNITY)
-                .add(KielsonsAPIEntityAttributes.SLOWNESS_IMMUNITY);
+                .add(KielsonsAPIAttributes.BLINDNESS_IMMUNITY)
+                .add(KielsonsAPIAttributes.DARKNESS_IMMUNITY)
+                .add(KielsonsAPIAttributes.WEAKNESS_IMMUNITY)
+                .add(KielsonsAPIAttributes.MINING_FATIGUE_IMMUNITY)
+                .add(KielsonsAPIAttributes.POISON_IMMUNITY)
+                .add(KielsonsAPIAttributes.WITHER_IMMUNITY)
+                .add(KielsonsAPIAttributes.LEVITATION_IMMUNITY)
+                .add(KielsonsAPIAttributes.SLOWNESS_IMMUNITY);
     }
 
     @ModifyArg(method = "dropExperience", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"), index = 2)
@@ -49,7 +49,7 @@ public class LivingEntityMixin {
         if (attackingPlayer == null) {
             return originalXP;
         }
-        AttributeInstance attributeInstance = attackingPlayer.getAttribute(KielsonsAPIEntityAttributes.EXPERIENCE_MULTIPLIER);
+        AttributeInstance attributeInstance = attackingPlayer.getAttribute(KielsonsAPIAttributes.EXPERIENCE_MULTIPLIER);
         if (attributeInstance == null) {
             return originalXP;
         }
@@ -59,7 +59,7 @@ public class LivingEntityMixin {
     @Inject(method = "getDamageAfterMagicAbsorb", at = @At("RETURN"), cancellable = true)
     private void Kielson$applyFreezingResistance(DamageSource damageSource, float damage, CallbackInfoReturnable<Float> cir) {
         if (damageSource.is(DamageTypes.FREEZE)) {
-            AttributeInstance resistanceInstance = livingEntity.getAttribute(KielsonsAPIEntityAttributes.FREEZING_RESISTANCE);
+            AttributeInstance resistanceInstance = livingEntity.getAttribute(KielsonsAPIAttributes.FREEZING_RESISTANCE);
             if (resistanceInstance != null) {
                 float resistance = (float) resistanceInstance.getValue();
                 float originalDamage = cir.getReturnValue();
@@ -71,7 +71,7 @@ public class LivingEntityMixin {
     @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
     private void Kielson$cancelFreezeHurtAnimation(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
         if (source.is(DamageTypes.FREEZE)) {
-            AttributeInstance resistanceInstance = livingEntity.getAttribute(KielsonsAPIEntityAttributes.FREEZING_RESISTANCE);
+            AttributeInstance resistanceInstance = livingEntity.getAttribute(KielsonsAPIAttributes.FREEZING_RESISTANCE);
             if (resistanceInstance != null && resistanceInstance.getValue() >= 1.0f) {
                 cir.setReturnValue(false);
             }
@@ -82,13 +82,13 @@ public class LivingEntityMixin {
     private void Kielson$blockStatusEffects(MobEffectInstance newEffect, Entity source, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity living = (LivingEntity) (Object) this;
 
-        if (newEffect.getEffect() == MobEffects.BLINDNESS && BooleanAttribute.isTrue(living, KielsonsAPIEntityAttributes.BLINDNESS_IMMUNITY)) cir.setReturnValue(false);
-        if (newEffect.getEffect() == MobEffects.DARKNESS && BooleanAttribute.isTrue(living, KielsonsAPIEntityAttributes.DARKNESS_IMMUNITY)) cir.setReturnValue(false);
-        if (newEffect.getEffect() == MobEffects.WEAKNESS && BooleanAttribute.isTrue(living, KielsonsAPIEntityAttributes.WEAKNESS_IMMUNITY)) cir.setReturnValue(false);
-        if (newEffect.getEffect() == MobEffects.MINING_FATIGUE && BooleanAttribute.isTrue(living, KielsonsAPIEntityAttributes.MINING_FATIGUE_IMMUNITY)) cir.setReturnValue(false);
-        if (newEffect.getEffect() == MobEffects.POISON && BooleanAttribute.isTrue(living, KielsonsAPIEntityAttributes.POISON_IMMUNITY)) cir.setReturnValue(false);
-        if (newEffect.getEffect() == MobEffects.WITHER && BooleanAttribute.isTrue(living, KielsonsAPIEntityAttributes.WITHER_IMMUNITY)) cir.setReturnValue(false);
-        if (newEffect.getEffect() == MobEffects.LEVITATION && BooleanAttribute.isTrue(living, KielsonsAPIEntityAttributes.LEVITATION_IMMUNITY)) cir.setReturnValue(false);
-        if (newEffect.getEffect() == MobEffects.SLOWNESS && BooleanAttribute.isTrue(living, KielsonsAPIEntityAttributes.SLOWNESS_IMMUNITY)) cir.setReturnValue(false);
+        if (newEffect.getEffect() == MobEffects.BLINDNESS && BooleanAttribute.isTrue(living, KielsonsAPIAttributes.BLINDNESS_IMMUNITY)) cir.setReturnValue(false);
+        if (newEffect.getEffect() == MobEffects.DARKNESS && BooleanAttribute.isTrue(living, KielsonsAPIAttributes.DARKNESS_IMMUNITY)) cir.setReturnValue(false);
+        if (newEffect.getEffect() == MobEffects.WEAKNESS && BooleanAttribute.isTrue(living, KielsonsAPIAttributes.WEAKNESS_IMMUNITY)) cir.setReturnValue(false);
+        if (newEffect.getEffect() == MobEffects.MINING_FATIGUE && BooleanAttribute.isTrue(living, KielsonsAPIAttributes.MINING_FATIGUE_IMMUNITY)) cir.setReturnValue(false);
+        if (newEffect.getEffect() == MobEffects.POISON && BooleanAttribute.isTrue(living, KielsonsAPIAttributes.POISON_IMMUNITY)) cir.setReturnValue(false);
+        if (newEffect.getEffect() == MobEffects.WITHER && BooleanAttribute.isTrue(living, KielsonsAPIAttributes.WITHER_IMMUNITY)) cir.setReturnValue(false);
+        if (newEffect.getEffect() == MobEffects.LEVITATION && BooleanAttribute.isTrue(living, KielsonsAPIAttributes.LEVITATION_IMMUNITY)) cir.setReturnValue(false);
+        if (newEffect.getEffect() == MobEffects.SLOWNESS && BooleanAttribute.isTrue(living, KielsonsAPIAttributes.SLOWNESS_IMMUNITY)) cir.setReturnValue(false);
     }
 }

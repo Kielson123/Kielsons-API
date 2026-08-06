@@ -1,6 +1,6 @@
 package com.kielson.item;
 
-import com.kielson.KielsonsAPIEntityAttributes;
+import com.kielson.KielsonsAPIAttributes;
 import com.kielson.util.RangedWeaponHelper;
 import com.kielson.util.RangedWeaponStats;
 import net.minecraft.core.component.DataComponents;
@@ -38,10 +38,10 @@ public class CustomCrossbow extends CrossbowItem {
     private static Properties applyCustomStats(Properties settings, RangedWeaponStats stats) {
         IGNORE_MIXIN = true;
         return settings.attributes(ItemAttributeModifiers.builder()
-                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE,
+                .add(KielsonsAPIAttributes.RANGED_DAMAGE,
                         new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "custom_crossbow"), stats.damage(), AttributeModifier.Operation.ADD_VALUE),
                         EquipmentSlotGroup.HAND)
-                .add(KielsonsAPIEntityAttributes.PULL_TIME,
+                .add(KielsonsAPIAttributes.PULL_TIME,
                         new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "custom_crossbow"), stats.pullTime(), AttributeModifier.Operation.ADD_VALUE),
                         EquipmentSlotGroup.HAND)
                 .build());
@@ -102,11 +102,11 @@ public class CustomCrossbow extends CrossbowItem {
         Projectile proj = super.createProjectile(level, shooter, weapon, ammo, crit);
 
         if (proj instanceof AbstractArrow arrow) {
-            if(shooter.getAttribute(KielsonsAPIEntityAttributes.RANGED_DAMAGE) == null){
+            if(shooter.getAttribute(KielsonsAPIAttributes.RANGED_DAMAGE) == null){
                 arrow.setBaseDamage(9 / stats.velocity());
             }
             else {
-                arrow.setBaseDamage(shooter.getAttributeValue(KielsonsAPIEntityAttributes.RANGED_DAMAGE) / stats.velocity());
+                arrow.setBaseDamage(shooter.getAttributeValue(KielsonsAPIAttributes.RANGED_DAMAGE) / stats.velocity());
             }
         }
         return proj;

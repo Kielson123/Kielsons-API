@@ -1,6 +1,6 @@
 package com.kielson.mixin.entity_attributes;
 
-import com.kielson.KielsonsAPIEntityAttributes;
+import com.kielson.KielsonsAPIAttributes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
@@ -20,8 +20,8 @@ abstract public class VillagerMixin extends AbstractVillager {
 
     @Inject(method = "updateSpecialPrices", at = @At("HEAD"))
     private void Kielson$addVillagerDiscountAttribute(Player player, CallbackInfo ci){
-        if(player.getAttribute(KielsonsAPIEntityAttributes.TRADE_DISCOUNT_MULTIPLIER) == null) return;
-        double discountValue = player.getAttributeValue(KielsonsAPIEntityAttributes.TRADE_DISCOUNT_MULTIPLIER);
+        if(player.getAttribute(KielsonsAPIAttributes.TRADE_DISCOUNT_MULTIPLIER) == null) return;
+        double discountValue = player.getAttributeValue(KielsonsAPIAttributes.TRADE_DISCOUNT_MULTIPLIER);
 
         for(MerchantOffer offer : this.getOffers()){
             offer.addToSpecialPriceDiff((int) (offer.getBaseCostA().count() * discountValue) - offer.getBaseCostA().count());

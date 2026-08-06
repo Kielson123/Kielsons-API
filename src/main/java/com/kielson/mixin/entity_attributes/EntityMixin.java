@@ -1,6 +1,6 @@
 package com.kielson.mixin.entity_attributes;
 
-import com.kielson.KielsonsAPIEntityAttributes;
+import com.kielson.KielsonsAPIAttributes;
 import com.kielson.util.BooleanAttribute;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -26,7 +26,7 @@ public abstract class EntityMixin {
     @Inject(method = "getPercentFrozen", at = @At("RETURN"), cancellable = true)
     private void Kielson$scaleFrozenOverlay(CallbackInfoReturnable<Float> cir) {
         if ((Object) this instanceof LivingEntity living) {
-            AttributeInstance resistanceInstance = living.getAttribute(KielsonsAPIEntityAttributes.FREEZING_RESISTANCE);
+            AttributeInstance resistanceInstance = living.getAttribute(KielsonsAPIAttributes.FREEZING_RESISTANCE);
 
             if (resistanceInstance != null) {
                 float resistance = (float) resistanceInstance.getValue();
@@ -45,7 +45,7 @@ public abstract class EntityMixin {
 
             if (entity instanceof Player player && !player.level().isClientSide()) {
 
-                if (BooleanAttribute.isTrue(player, KielsonsAPIEntityAttributes.VOID_IMMUNITY)) {
+                if (BooleanAttribute.isTrue(player, KielsonsAPIAttributes.VOID_IMMUNITY)) {
                     ServerLevel serverLevel = (ServerLevel) player.level();
                     BlockPos startPos = player.blockPosition();
                     BlockPos safePos = null;

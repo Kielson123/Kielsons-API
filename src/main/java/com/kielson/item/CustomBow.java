@@ -1,6 +1,6 @@
 package com.kielson.item;
 
-import com.kielson.KielsonsAPIEntityAttributes;
+import com.kielson.KielsonsAPIAttributes;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -40,10 +40,10 @@ public class CustomBow extends BowItem {
     private static Properties applyCustomStats(Properties settings, RangedWeaponStats stats) {
         IGNORE_MIXIN = true;
         return settings.attributes(ItemAttributeModifiers.builder()
-                .add(KielsonsAPIEntityAttributes.RANGED_DAMAGE,
+                .add(KielsonsAPIAttributes.RANGED_DAMAGE,
                         new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "custom_bow"), stats.damage(), AttributeModifier.Operation.ADD_VALUE),
                         EquipmentSlotGroup.HAND)
-                .add(KielsonsAPIEntityAttributes.PULL_TIME,
+                .add(KielsonsAPIAttributes.PULL_TIME,
                         new AttributeModifier(Identifier.fromNamespaceAndPath(MOD_ID, "custom_bow"), stats.pullTime(), AttributeModifier.Operation.ADD_VALUE),
                         EquipmentSlotGroup.HAND)
                 .build());
